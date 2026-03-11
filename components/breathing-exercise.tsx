@@ -1,18 +1,19 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import { motion, AnimatePresence } from "framer-motion"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Wind } from "lucide-react"
+import { Wind, X } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 type Phase = "inhale" | "hold" | "exhale" | "rest"
 
-const phases: { phase: Phase; duration: number; instruction: string }[] = [
-  { phase: "inhale", duration: 4, instruction: "Breathe in..." },
-  { phase: "hold", duration: 4, instruction: "Hold..." },
-  { phase: "exhale", duration: 4, instruction: "Breathe out..." },
-  { phase: "rest", duration: 2, instruction: "Rest..." },
+const phases: { phase: Phase; duration: number; instruction: string; scale: number }[] = [
+  { phase: "inhale", duration: 4, instruction: "Breathe in...", scale: 1.5 },
+  { phase: "hold", duration: 4, instruction: "Hold...", scale: 1.5 },
+  { phase: "exhale", duration: 4, instruction: "Breathe out...", scale: 1 },
+  { phase: "rest", duration: 2, instruction: "Rest...", scale: 1 },
 ]
 
 interface BreathingExerciseProps {
@@ -28,8 +29,6 @@ export function BreathingExercise({ onComplete, onSkip, cycles = 3 }: BreathingE
   const [isActive, setIsActive] = useState(true)
 
   const currentPhase = phases[currentPhaseIndex]
-  const totalDuration = phases.reduce((acc, p) => acc + p.duration, 0)
-  const phaseProgress = ((currentPhase.duration - timeInPhase) / currentPhase.duration) * 100
 
   useEffect(() => {
     if (!isActive) return
@@ -37,11 +36,9 @@ export function BreathingExercise({ onComplete, onSkip, cycles = 3 }: BreathingE
     const interval = setInterval(() => {
       setTimeInPhase((prev) => {
         if (prev <= 1) {
-          // Move to next phase
           const nextIndex = (currentPhaseIndex + 1) % phases.length
           
           if (nextIndex === 0) {
-            // Completed a cycle
             if (currentCycle >= cycles) {
               setIsActive(false)
               setTimeout(onComplete, 500)
@@ -60,87 +57,188 @@ export function BreathingExercise({ onComplete, onSkip, cycles = 3 }: BreathingE
     return () => clearInterval(interval)
   }, [isActive, currentPhaseIndex, currentCycle, cycles, onComplete])
 
-  const getCircleScale = () => {
+  const getPhaseColor = () => {
     switch (currentPhase.phase) {
-      case "inhale":
-        return 1 + (phaseProgress / 100) * 0.5
-      case "hold":
-        return 1.5
-      case "exhale":
-        return 1.5 - (phaseProgress / 100) * 0.5
-      case "rest":
-        return 1
-      default:
-        return 1
+      case "inhale": return "from-teal-400 to-cyan-500"
+      case "hold": return "from-cyan-400 to-blue-500"
+      case "exhale": return "from-blue-400 to-indigo-500"
+      case "rest": return "from-indigo-400 to-purple-500"
     }
   }
 
   return (
-    <Card className="w-full max-w-md mx-auto overflow-hidden">
-      <div className="h-2 bg-primary" />
-      <CardHeader className="text-center pb-4">
-        <div className="mx-auto mb-4 h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center">
-          <Wind className="h-6 w-6 text-primary" />
-        </div>
+    <Card className="w-full max-w-lg mx-auto overflow-hidden glass-card">
+      <div className={cn("h-1.5 bg-gradient-to-r transition-all duration-500", getPhaseColor())} />
+      <CardHeader className="text-center pb-2 relative">
+        <Button
+          variant="ghost"
+          size="icon"
+          className="absolute right-4 top-4"
+          onClick={onSkip}
+        >
+          <X className="h-4 w-4" />
+        </Button>
+        <motion.div 
+          className="mx-auto mb-4 h-14 w-14 rounded-full bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center"
+          animate={{ scale: [1, 1.1, 1] }}
+          transition={{ duration: 2, repeat: Infinity }}
+        >
+          <Wind className="h-7 w-7 text-primary" />
+        </motion.div>
         <CardTitle className="text-2xl">Breathing Exercise</CardTitle>
         <p className="text-sm text-muted-foreground">
           Cycle {currentCycle} of {cycles}
         </p>
       </CardHeader>
-      <CardContent className="space-y-8">
+      <CardContent className="space-y-8 pb-8">
+        {/* Main Breathing Circle */}
         <div className="flex items-center justify-center py-8">
-          <div className="relative h-48 w-48 flex items-center justify-center">
-            {/* Outer ring */}
-            <div className="absolute inset-0 rounded-full border-4 border-muted" />
+          <div className="relative h-56 w-56 flex items-center justify-center">
+            {/* Outer pulsing rings */}
+            {[1, 2, 3].map((ring) => (
+              <motion.div
+                key={ring}
+                className={cn(
+                  "absolute inset-0 rounded-full border-2",
+                  ring === 1 ? "border-primary/30" : 
+                  ring === 2 ? "border-primary/20" : "border-primary/10"
+                )}
+                animate={{
+                  scale: currentPhase.phase === "inhale" || currentPhase.phase === "hold" 
+                    ? [1, 1.1 + ring * 0.05, 1.1 + ring * 0.05]
+                    : [1.1 + ring * 0.05, 1, 1],
+                  opacity: [0.3, 0.6, 0.3],
+                }}
+                transition={{
+                  duration: currentPhase.duration,
+                  ease: "easeInOut",
+                }}
+              />
+            ))}
             
-            {/* Animated breathing circle */}
-            <div
+            {/* Main breathing circle */}
+            <motion.div
               className={cn(
-                "rounded-full bg-primary/20 transition-transform duration-1000 ease-in-out flex items-center justify-center",
-                currentPhase.phase === "inhale" && "bg-primary/30",
-                currentPhase.phase === "hold" && "bg-primary/40",
-                currentPhase.phase === "exhale" && "bg-primary/20"
+                "rounded-full bg-gradient-to-br flex items-center justify-center shadow-lg",
+                getPhaseColor()
               )}
-              style={{
-                width: 120,
-                height: 120,
-                transform: `scale(${getCircleScale()})`,
+              animate={{
+                scale: currentPhase.scale,
+                boxShadow: currentPhase.phase === "hold" 
+                  ? "0 0 60px rgba(45, 212, 191, 0.5)"
+                  : "0 0 30px rgba(45, 212, 191, 0.3)",
               }}
+              transition={{
+                duration: currentPhase.duration,
+                ease: "easeInOut",
+              }}
+              style={{ width: 120, height: 120 }}
             >
-              <div className="text-center">
-                <p className="text-lg font-medium text-primary">
-                  {timeInPhase}
-                </p>
-              </div>
-            </div>
+              <motion.span 
+                className="text-4xl font-light text-white"
+                key={timeInPhase}
+                initial={{ scale: 1.2, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={{ duration: 0.3 }}
+              >
+                {timeInPhase}
+              </motion.span>
+            </motion.div>
+            
+            {/* Particle effects */}
+            <AnimatePresence>
+              {currentPhase.phase === "inhale" && (
+                <>
+                  {[...Array(6)].map((_, i) => (
+                    <motion.div
+                      key={i}
+                      className="absolute h-2 w-2 rounded-full bg-primary/60"
+                      initial={{ 
+                        scale: 0,
+                        x: Math.cos(i * 60 * Math.PI / 180) * 120,
+                        y: Math.sin(i * 60 * Math.PI / 180) * 120,
+                      }}
+                      animate={{ 
+                        scale: [0, 1, 0],
+                        x: 0,
+                        y: 0,
+                      }}
+                      transition={{
+                        duration: currentPhase.duration,
+                        delay: i * 0.1,
+                        ease: "easeIn",
+                      }}
+                    />
+                  ))}
+                </>
+              )}
+              {currentPhase.phase === "exhale" && (
+                <>
+                  {[...Array(6)].map((_, i) => (
+                    <motion.div
+                      key={i}
+                      className="absolute h-2 w-2 rounded-full bg-primary/60"
+                      initial={{ 
+                        scale: 1,
+                        x: 0,
+                        y: 0,
+                      }}
+                      animate={{ 
+                        scale: [1, 0.5, 0],
+                        x: Math.cos(i * 60 * Math.PI / 180) * 100,
+                        y: Math.sin(i * 60 * Math.PI / 180) * 100,
+                      }}
+                      transition={{
+                        duration: currentPhase.duration,
+                        delay: i * 0.1,
+                        ease: "easeOut",
+                      }}
+                    />
+                  ))}
+                </>
+              )}
+            </AnimatePresence>
           </div>
         </div>
 
-        <div className="text-center space-y-2">
-          <p className="text-2xl font-semibold text-foreground">
+        {/* Instruction */}
+        <div className="text-center space-y-4">
+          <motion.p 
+            key={currentPhase.instruction}
+            className="text-2xl font-medium text-foreground"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3 }}
+          >
             {currentPhase.instruction}
-          </p>
+          </motion.p>
+          
+          {/* Phase indicators */}
           <div className="flex justify-center gap-2">
             {phases.map((p, idx) => (
-              <div
+              <motion.div
                 key={p.phase}
                 className={cn(
-                  "h-2 w-2 rounded-full transition-colors",
-                  idx === currentPhaseIndex ? "bg-primary" : "bg-muted"
+                  "h-2 rounded-full transition-all duration-300",
+                  idx === currentPhaseIndex 
+                    ? "w-8 bg-primary" 
+                    : "w-2 bg-muted"
                 )}
+                layout
               />
             ))}
           </div>
         </div>
 
-        <div className="flex gap-3">
+        {/* Skip Button */}
+        <div className="flex justify-center">
           <Button 
             onClick={onSkip}
             variant="outline"
-            className="flex-1"
+            className="px-8"
             size="lg"
           >
-            Skip
+            Skip Exercise
           </Button>
         </div>
       </CardContent>

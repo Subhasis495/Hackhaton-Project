@@ -1,6 +1,8 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import dynamic from "next/dynamic"
+import { motion, AnimatePresence } from "framer-motion"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -15,7 +17,9 @@ import {
   Navigation,
   Filter,
   Building2,
-  ChevronDown
+  ChevronDown,
+  List,
+  Map
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import {
@@ -24,6 +28,19 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+
+// Dynamically import the map to avoid SSR issues
+const ClinicMap = dynamic(() => import("./clinic-map").then(mod => mod.ClinicMap), {
+  ssr: false,
+  loading: () => (
+    <div className="h-[400px] w-full rounded-xl bg-muted flex items-center justify-center">
+      <div className="text-center space-y-2">
+        <div className="h-8 w-8 border-2 border-primary border-t-transparent rounded-full animate-spin mx-auto" />
+        <p className="text-sm text-muted-foreground">Loading map...</p>
+      </div>
+    </div>
+  ),
+})
 
 interface Clinic {
   id: string
@@ -38,6 +55,8 @@ interface Clinic {
   hours: string
   phone: string
   waitTime?: string
+  lat: number
+  lng: number
 }
 
 const mockClinics: Clinic[] = [
@@ -54,6 +73,8 @@ const mockClinics: Clinic[] = [
     hours: "8:00 AM - 6:00 PM",
     phone: "(555) 123-4567",
     waitTime: "15 min",
+    lat: 37.7849,
+    lng: -122.4094,
   },
   {
     id: "2",
@@ -68,6 +89,8 @@ const mockClinics: Clinic[] = [
     hours: "9:00 AM - 5:00 PM",
     phone: "(555) 234-5678",
     waitTime: "30 min",
+    lat: 37.7699,
+    lng: -122.4294,
   },
   {
     id: "3",
@@ -82,6 +105,8 @@ const mockClinics: Clinic[] = [
     hours: "24/7",
     phone: "(555) 345-6789",
     waitTime: "45 min",
+    lat: 37.7799,
+    lng: -122.4194,
   },
   {
     id: "4",
@@ -95,6 +120,8 @@ const mockClinics: Clinic[] = [
     acceptsWalkIn: true,
     hours: "7:00 AM - 7:00 PM",
     phone: "(555) 456-7890",
+    lat: 37.7649,
+    lng: -122.4394,
   },
   {
     id: "5",
@@ -108,6 +135,8 @@ const mockClinics: Clinic[] = [
     acceptsWalkIn: false,
     hours: "8:30 AM - 4:30 PM",
     phone: "(555) 567-8901",
+    lat: 37.7899,
+    lng: -122.3994,
   },
   {
     id: "6",
@@ -121,6 +150,8 @@ const mockClinics: Clinic[] = [
     acceptsWalkIn: false,
     hours: "9:00 AM - 6:00 PM",
     phone: "(555) 678-9012",
+    lat: 37.7749,
+    lng: -122.4094,
   },
   {
     id: "7",
@@ -134,6 +165,8 @@ const mockClinics: Clinic[] = [
     acceptsWalkIn: false,
     hours: "7:00 AM - 8:00 PM",
     phone: "(555) 789-0123",
+    lat: 37.7599,
+    lng: -122.4494,
   },
   {
     id: "8",
@@ -148,6 +181,8 @@ const mockClinics: Clinic[] = [
     hours: "9:00 AM - 5:30 PM",
     phone: "(555) 890-1234",
     waitTime: "20 min",
+    lat: 37.7819,
+    lng: -122.4144,
   },
 ]
 
@@ -160,6 +195,8 @@ export function ClinicFinder({ initialSpecialist }: ClinicFinderProps) {
   const [sortBy, setSortBy] = useState<"distance" | "rating" | "price">("distance")
   const [filterWalkIn, setFilterWalkIn] = useState(false)
   const [filterPriceRange, setFilterPriceRange] = useState<"all" | "low" | "medium" | "high">("all")
+  const [viewMode, setViewMode] = useState<"list" | "map">("map")
+  const [selectedClinic, setSelectedClinic] = useState<string | null>(null)
 
   useEffect(() => {
     if (initialSpecialist) {
@@ -197,18 +234,18 @@ export function ClinicFinder({ initialSpecialist }: ClinicFinderProps) {
   const getPriceDisplay = (range: "low" | "medium" | "high") => {
     switch (range) {
       case "low":
-        return { label: "Affordable", icon: "$", color: "text-chart-2" }
+        return { label: "Affordable", icon: "$", color: "text-green-600 dark:text-green-400" }
       case "medium":
-        return { label: "Moderate", icon: "$$", color: "text-chart-4" }
+        return { label: "Moderate", icon: "$$", color: "text-amber-600 dark:text-amber-400" }
       case "high":
-        return { label: "Premium", icon: "$$$", color: "text-chart-5" }
+        return { label: "Premium", icon: "$$$", color: "text-rose-600 dark:text-rose-400" }
     }
   }
 
   return (
     <div className="space-y-6">
       {/* Search and Filters */}
-      <Card>
+      <Card className="glass-card">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <MapPin className="h-5 w-5 text-primary" />
@@ -231,60 +268,84 @@ export function ClinicFinder({ initialSpecialist }: ClinicFinderProps) {
           </div>
 
           {/* Filter Row */}
-          <div className="flex flex-wrap gap-2">
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="outline" size="sm" className="gap-2">
-                  <Filter className="h-4 w-4" />
-                  Sort: {sortBy.charAt(0).toUpperCase() + sortBy.slice(1)}
-                  <ChevronDown className="h-3 w-3" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent>
-                <DropdownMenuItem onClick={() => setSortBy("distance")}>
-                  Distance
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setSortBy("rating")}>
-                  Rating
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setSortBy("price")}>
-                  Price
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <div className="flex flex-wrap gap-2">
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline" size="sm" className="gap-2">
+                    <Filter className="h-4 w-4" />
+                    Sort: {sortBy.charAt(0).toUpperCase() + sortBy.slice(1)}
+                    <ChevronDown className="h-3 w-3" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent>
+                  <DropdownMenuItem onClick={() => setSortBy("distance")}>
+                    Distance
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => setSortBy("rating")}>
+                    Rating
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => setSortBy("price")}>
+                    Price
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
 
-            <Button
-              variant={filterWalkIn ? "default" : "outline"}
-              size="sm"
-              onClick={() => setFilterWalkIn(!filterWalkIn)}
-              className="gap-2"
-            >
-              Walk-in
-            </Button>
+              <Button
+                variant={filterWalkIn ? "default" : "outline"}
+                size="sm"
+                onClick={() => setFilterWalkIn(!filterWalkIn)}
+                className="gap-2"
+              >
+                Walk-in
+              </Button>
 
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="outline" size="sm" className="gap-2">
-                  <DollarSign className="h-4 w-4" />
-                  Price: {filterPriceRange === "all" ? "All" : filterPriceRange}
-                  <ChevronDown className="h-3 w-3" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent>
-                <DropdownMenuItem onClick={() => setFilterPriceRange("all")}>
-                  All Prices
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setFilterPriceRange("low")}>
-                  $ Affordable
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setFilterPriceRange("medium")}>
-                  $$ Moderate
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setFilterPriceRange("high")}>
-                  $$$ Premium
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline" size="sm" className="gap-2">
+                    <DollarSign className="h-4 w-4" />
+                    Price: {filterPriceRange === "all" ? "All" : filterPriceRange}
+                    <ChevronDown className="h-3 w-3" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent>
+                  <DropdownMenuItem onClick={() => setFilterPriceRange("all")}>
+                    All Prices
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => setFilterPriceRange("low")}>
+                    $ Affordable
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => setFilterPriceRange("medium")}>
+                    $$ Moderate
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => setFilterPriceRange("high")}>
+                    $$$ Premium
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
+
+            {/* View Toggle */}
+            <div className="flex gap-1 bg-muted rounded-lg p-1">
+              <Button
+                variant={viewMode === "map" ? "default" : "ghost"}
+                size="sm"
+                onClick={() => setViewMode("map")}
+                className="gap-2"
+              >
+                <Map className="h-4 w-4" />
+                Map
+              </Button>
+              <Button
+                variant={viewMode === "list" ? "default" : "ghost"}
+                size="sm"
+                onClick={() => setViewMode("list")}
+                className="gap-2"
+              >
+                <List className="h-4 w-4" />
+                List
+              </Button>
+            </div>
           </div>
 
           {/* Results Count */}
@@ -294,145 +355,144 @@ export function ClinicFinder({ initialSpecialist }: ClinicFinderProps) {
         </CardContent>
       </Card>
 
-      {/* Map Placeholder */}
-      <Card className="overflow-hidden">
-        <div className="relative h-48 bg-muted">
-          <div className="absolute inset-0 flex items-center justify-center">
-            <div className="text-center">
-              <MapPin className="h-8 w-8 text-primary mx-auto mb-2" />
-              <p className="text-sm text-muted-foreground">
-                Interactive map would display here
-              </p>
-              <Button variant="outline" size="sm" className="mt-2 gap-2">
-                <Navigation className="h-4 w-4" />
-                Use my location
-              </Button>
-            </div>
-          </div>
-          {/* Map pins simulation */}
-          <div className="absolute top-8 left-1/4">
-            <div className="h-6 w-6 rounded-full bg-primary flex items-center justify-center text-primary-foreground text-xs font-bold">
-              1
-            </div>
-          </div>
-          <div className="absolute top-16 right-1/3">
-            <div className="h-6 w-6 rounded-full bg-primary flex items-center justify-center text-primary-foreground text-xs font-bold">
-              2
-            </div>
-          </div>
-          <div className="absolute bottom-12 left-1/2">
-            <div className="h-6 w-6 rounded-full bg-primary flex items-center justify-center text-primary-foreground text-xs font-bold">
-              3
-            </div>
-          </div>
-        </div>
-      </Card>
+      {/* Map View */}
+      <AnimatePresence mode="wait">
+        {viewMode === "map" && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.3 }}
+          >
+            <ClinicMap 
+              clinics={filteredClinics} 
+              selectedClinic={selectedClinic}
+              onSelectClinic={setSelectedClinic}
+            />
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Clinic List */}
       <div className="space-y-4">
         {filteredClinics.map((clinic, idx) => {
           const price = getPriceDisplay(clinic.priceRange)
+          const isSelected = selectedClinic === clinic.id
+          
           return (
-            <Card key={clinic.id} className="overflow-hidden">
-              <CardContent className="p-0">
-                <div className="flex">
-                  {/* Number indicator */}
-                  <div className="w-12 bg-primary/5 flex items-center justify-center shrink-0">
-                    <span className="text-lg font-bold text-primary">
-                      {idx + 1}
-                    </span>
-                  </div>
+            <motion.div
+              key={clinic.id}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: idx * 0.05 }}
+            >
+              <Card 
+                className={cn(
+                  "overflow-hidden glass-card cursor-pointer transition-all duration-300",
+                  isSelected && "ring-2 ring-primary shadow-lg"
+                )}
+                onClick={() => setSelectedClinic(isSelected ? null : clinic.id)}
+              >
+                <CardContent className="p-0">
+                  <div className="flex">
+                    {/* Number indicator */}
+                    <div className="w-12 bg-gradient-to-b from-primary/10 to-primary/5 flex items-center justify-center shrink-0">
+                      <span className="text-lg font-bold text-primary">
+                        {idx + 1}
+                      </span>
+                    </div>
 
-                  {/* Content */}
-                  <div className="flex-1 p-4">
-                    <div className="flex items-start justify-between gap-4">
-                      <div className="min-w-0 flex-1">
-                        <div className="flex items-center gap-2 flex-wrap">
-                          <h3 className="font-semibold text-lg">{clinic.name}</h3>
-                          {clinic.acceptsWalkIn && (
-                            <Badge variant="secondary" className="text-xs">
-                              Walk-in
-                            </Badge>
-                          )}
-                        </div>
+                    {/* Content */}
+                    <div className="flex-1 p-4">
+                      <div className="flex items-start justify-between gap-4">
+                        <div className="min-w-0 flex-1">
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <h3 className="font-semibold text-lg">{clinic.name}</h3>
+                            {clinic.acceptsWalkIn && (
+                              <Badge variant="secondary" className="text-xs bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400">
+                                Walk-in
+                              </Badge>
+                            )}
+                          </div>
 
-                        <div className="flex flex-wrap gap-1 mt-1">
-                          {clinic.specialty.slice(0, 3).map((spec) => (
-                            <Badge
-                              key={spec}
-                              variant="outline"
-                              className="text-xs font-normal"
-                            >
-                              {spec}
-                            </Badge>
-                          ))}
-                          {clinic.specialty.length > 3 && (
-                            <Badge
-                              variant="outline"
-                              className="text-xs font-normal"
-                            >
-                              +{clinic.specialty.length - 3}
-                            </Badge>
-                          )}
-                        </div>
+                          <div className="flex flex-wrap gap-1 mt-1">
+                            {clinic.specialty.slice(0, 3).map((spec) => (
+                              <Badge
+                                key={spec}
+                                variant="outline"
+                                className="text-xs font-normal"
+                              >
+                                {spec}
+                              </Badge>
+                            ))}
+                            {clinic.specialty.length > 3 && (
+                              <Badge
+                                variant="outline"
+                                className="text-xs font-normal"
+                              >
+                                +{clinic.specialty.length - 3}
+                              </Badge>
+                            )}
+                          </div>
 
-                        <div className="flex items-center gap-4 mt-3 text-sm text-muted-foreground">
-                          <span className="flex items-center gap-1">
-                            <MapPin className="h-3.5 w-3.5" />
-                            {clinic.distance} mi
-                          </span>
-                          <span className="flex items-center gap-1">
-                            <Star className="h-3.5 w-3.5 fill-chart-4 text-chart-4" />
-                            {clinic.rating} ({clinic.reviewCount})
-                          </span>
-                          <span className={cn("font-medium", price.color)}>
-                            {price.icon}
-                          </span>
-                          {clinic.waitTime && (
+                          <div className="flex items-center gap-4 mt-3 text-sm text-muted-foreground">
                             <span className="flex items-center gap-1">
-                              <Clock className="h-3.5 w-3.5" />
-                              {clinic.waitTime}
+                              <MapPin className="h-3.5 w-3.5" />
+                              {clinic.distance} mi
                             </span>
-                          )}
+                            <span className="flex items-center gap-1">
+                              <Star className="h-3.5 w-3.5 fill-amber-400 text-amber-400" />
+                              {clinic.rating} ({clinic.reviewCount})
+                            </span>
+                            <span className={cn("font-medium", price.color)}>
+                              {price.icon}
+                            </span>
+                            {clinic.waitTime && (
+                              <span className="flex items-center gap-1">
+                                <Clock className="h-3.5 w-3.5" />
+                                {clinic.waitTime}
+                              </span>
+                            )}
+                          </div>
+
+                          <p className="text-sm text-muted-foreground mt-2 flex items-center gap-1">
+                            <Building2 className="h-3.5 w-3.5 shrink-0" />
+                            {clinic.address}
+                          </p>
                         </div>
 
-                        <p className="text-sm text-muted-foreground mt-2 flex items-center gap-1">
-                          <Building2 className="h-3.5 w-3.5 shrink-0" />
-                          {clinic.address}
-                        </p>
+                        <div className="flex flex-col gap-2 shrink-0">
+                          <Button size="sm" className="gap-2">
+                            <Navigation className="h-4 w-4" />
+                            Directions
+                          </Button>
+                          <Button variant="outline" size="sm" className="gap-2">
+                            <Phone className="h-4 w-4" />
+                            Call
+                          </Button>
+                        </div>
                       </div>
 
-                      <div className="flex flex-col gap-2 shrink-0">
-                        <Button size="sm" className="gap-2">
-                          <Navigation className="h-4 w-4" />
-                          Directions
-                        </Button>
-                        <Button variant="outline" size="sm" className="gap-2">
-                          <Phone className="h-4 w-4" />
-                          Call
-                        </Button>
+                      <div className="flex items-center gap-4 mt-3 pt-3 border-t text-sm">
+                        <span className="flex items-center gap-1 text-muted-foreground">
+                          <Clock className="h-3.5 w-3.5" />
+                          {clinic.hours}
+                        </span>
+                        <span className="flex items-center gap-1 text-muted-foreground">
+                          <Phone className="h-3.5 w-3.5" />
+                          {clinic.phone}
+                        </span>
                       </div>
-                    </div>
-
-                    <div className="flex items-center gap-4 mt-3 pt-3 border-t text-sm">
-                      <span className="flex items-center gap-1 text-muted-foreground">
-                        <Clock className="h-3.5 w-3.5" />
-                        {clinic.hours}
-                      </span>
-                      <span className="flex items-center gap-1 text-muted-foreground">
-                        <Phone className="h-3.5 w-3.5" />
-                        {clinic.phone}
-                      </span>
                     </div>
                   </div>
-                </div>
-              </CardContent>
-            </Card>
+                </CardContent>
+              </Card>
+            </motion.div>
           )
         })}
 
         {filteredClinics.length === 0 && (
-          <Card>
+          <Card className="glass-card">
             <CardContent className="py-12 text-center">
               <MapPin className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
               <h3 className="font-semibold text-lg">No clinics found</h3>
