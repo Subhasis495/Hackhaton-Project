@@ -4,7 +4,7 @@ import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Progress } from "@/components/ui/progress"
-import { Stretch, ChevronRight, Check } from "lucide-react"
+import { PersonStanding, ChevronRight, Check } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 const stretches = [
@@ -88,7 +88,7 @@ export function StretchingExercise({ onComplete, onSkip }: StretchingExercisePro
       <div className="h-2 bg-primary" />
       <CardHeader className="text-center pb-4">
         <div className="mx-auto mb-4 h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center">
-          <Stretch className="h-6 w-6 text-primary" />
+          <PersonStanding className="h-6 w-6 text-primary" />
         </div>
         <CardTitle className="text-2xl">Stretching Break</CardTitle>
         <p className="text-sm text-muted-foreground">

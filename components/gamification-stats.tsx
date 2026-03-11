@@ -8,7 +8,7 @@ import {
   Target, 
   Droplets, 
   Wind, 
-  Stretch,
+  PersonStanding,
   TrendingUp
 } from "lucide-react"
 import { cn } from "@/lib/utils"
@@ -126,7 +126,7 @@ export function GamificationStats({
               <span className="text-xs text-muted-foreground">Breathing</span>
             </div>
             <div className="flex flex-col items-center p-3 rounded-lg bg-muted/50">
-              <Stretch className="h-5 w-5 text-chart-2 mb-1" />
+              <PersonStanding className="h-5 w-5 text-chart-2 mb-1" />
               <span className="text-xl font-bold">{todayBreaks.stretching}</span>
               <span className="text-xs text-muted-foreground">Stretching</span>
             </div>

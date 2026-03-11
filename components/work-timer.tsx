@@ -11,7 +11,7 @@ import {
   Settings,
   Droplets,
   Wind,
-  Stretch
+  PersonStanding
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { BreathingExercise } from "./breathing-exercise"
@@ -49,7 +49,7 @@ const breaks: Break[] = [
     type: "stretching",
     title: "Stretching Break",
     description: "Stand up and stretch to prevent muscle tension.",
-    icon: Stretch,
+    icon: PersonStanding,
     duration: 90,
     points: 15,
   },
