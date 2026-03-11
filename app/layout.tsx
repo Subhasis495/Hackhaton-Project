@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from 'next'
 import { Inter, Plus_Jakarta_Sans } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
+import { WellnessChatbot } from '@/components/wellness-chatbot'
 import './globals.css'
 
 const inter = Inter({ 
@@ -29,9 +30,10 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en" className={`${inter.variable} ${jakarta.variable}`}>
+    <html lang="en" className={`${inter.variable} ${jakarta.variable} dark`}>
       <body className="font-sans antialiased">
         {children}
+        <WellnessChatbot />
         <Analytics />
       </body>
     </html>

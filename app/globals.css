@@ -178,6 +178,15 @@
     radial-gradient(at 0% 100%, rgba(45, 212, 191, 0.1) 0px, transparent 50%);
 }
 
+.dark .gradient-mesh {
+  background: 
+    radial-gradient(at 40% 20%, rgba(45, 212, 191, 0.12) 0px, transparent 50%),
+    radial-gradient(at 80% 0%, rgba(52, 211, 153, 0.08) 0px, transparent 50%),
+    radial-gradient(at 0% 50%, rgba(139, 92, 246, 0.06) 0px, transparent 50%),
+    radial-gradient(at 80% 50%, rgba(251, 191, 36, 0.05) 0px, transparent 50%),
+    radial-gradient(at 0% 100%, rgba(45, 212, 191, 0.08) 0px, transparent 50%);
+}
+
 /* Breathing animation */
 @keyframes breathe {
   0%, 100% { transform: scale(1); opacity: 0.6; }
