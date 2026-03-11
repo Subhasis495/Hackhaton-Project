@@ -12,7 +12,7 @@ import {
   MapPin, 
   Phone, 
   Clock, 
-  DollarSign,
+  IndianRupee,
   Star,
   Navigation,
   Filter,
@@ -57,132 +57,174 @@ interface Clinic {
   waitTime?: string
   lat: number
   lng: number
+  consultationFee: number
 }
 
 const mockClinics: Clinic[] = [
   {
     id: "1",
-    name: "Community Health Center",
-    specialty: ["General Practitioner", "Family Medicine", "Pediatrics"],
-    address: "123 Main Street, Suite 100",
+    name: "Apollo Clinic",
+    specialty: ["General Physician", "Family Medicine", "Pediatrics"],
+    address: "Connaught Place, New Delhi",
     distance: 0.5,
     rating: 4.5,
-    reviewCount: 128,
-    priceRange: "low",
+    reviewCount: 328,
+    priceRange: "medium",
     acceptsWalkIn: true,
-    hours: "8:00 AM - 6:00 PM",
-    phone: "(555) 123-4567",
+    hours: "8:00 AM - 8:00 PM",
+    phone: "+91 11 2345 6789",
     waitTime: "15 min",
-    lat: 37.7849,
-    lng: -122.4094,
+    lat: 28.6315,
+    lng: 77.2167,
+    consultationFee: 500,
   },
   {
     id: "2",
-    name: "Metro Medical Associates",
-    specialty: ["General Practitioner", "Internal Medicine", "Dermatologist"],
-    address: "456 Oak Avenue, Building B",
+    name: "Fortis Healthcare",
+    specialty: ["General Physician", "Internal Medicine", "Dermatologist"],
+    address: "Vasant Kunj, New Delhi",
     distance: 1.2,
     rating: 4.8,
-    reviewCount: 256,
-    priceRange: "medium",
+    reviewCount: 456,
+    priceRange: "high",
     acceptsWalkIn: false,
-    hours: "9:00 AM - 5:00 PM",
-    phone: "(555) 234-5678",
+    hours: "9:00 AM - 6:00 PM",
+    phone: "+91 11 3456 7890",
     waitTime: "30 min",
-    lat: 37.7699,
-    lng: -122.4294,
+    lat: 28.5355,
+    lng: 77.1588,
+    consultationFee: 1200,
   },
   {
     id: "3",
-    name: "Urgent Care Plus",
-    specialty: ["Emergency Room", "General Practitioner", "Urgent Care"],
-    address: "789 Emergency Lane",
+    name: "Max Super Speciality Hospital",
+    specialty: ["Emergency", "General Physician", "Urgent Care"],
+    address: "Saket, New Delhi",
     distance: 0.8,
-    rating: 4.2,
-    reviewCount: 89,
-    priceRange: "medium",
+    rating: 4.6,
+    reviewCount: 512,
+    priceRange: "high",
     acceptsWalkIn: true,
     hours: "24/7",
-    phone: "(555) 345-6789",
+    phone: "+91 11 4567 8901",
     waitTime: "45 min",
-    lat: 37.7799,
-    lng: -122.4194,
+    lat: 28.5245,
+    lng: 77.2066,
+    consultationFee: 1500,
   },
   {
     id: "4",
-    name: "Wellness Family Clinic",
-    specialty: ["General Practitioner", "Pediatrics", "Psychiatrist"],
-    address: "321 Wellness Way",
+    name: "Mohalla Clinic",
+    specialty: ["General Physician", "Pediatrics", "Basic Healthcare"],
+    address: "Lajpat Nagar, New Delhi",
     distance: 2.1,
-    rating: 4.6,
-    reviewCount: 167,
+    rating: 4.2,
+    reviewCount: 267,
     priceRange: "low",
     acceptsWalkIn: true,
-    hours: "7:00 AM - 7:00 PM",
-    phone: "(555) 456-7890",
-    lat: 37.7649,
-    lng: -122.4394,
+    hours: "8:00 AM - 2:00 PM",
+    phone: "+91 11 5678 9012",
+    lat: 28.5677,
+    lng: 77.2433,
+    consultationFee: 50,
   },
   {
     id: "5",
-    name: "Specialty Care Center",
-    specialty: ["Cardiologist", "Neurologist", "Pulmonologist"],
-    address: "555 Medical Plaza, Floor 3",
+    name: "AIIMS OPD",
+    specialty: ["Cardiologist", "Neurologist", "Pulmonologist", "All Specialties"],
+    address: "Ansari Nagar, New Delhi",
     distance: 3.4,
-    rating: 4.9,
-    reviewCount: 312,
-    priceRange: "high",
-    acceptsWalkIn: false,
-    hours: "8:30 AM - 4:30 PM",
-    phone: "(555) 567-8901",
-    lat: 37.7899,
-    lng: -122.3994,
+    rating: 4.7,
+    reviewCount: 1024,
+    priceRange: "low",
+    acceptsWalkIn: true,
+    hours: "8:00 AM - 4:00 PM",
+    phone: "+91 11 2658 8500",
+    lat: 28.5672,
+    lng: 77.2100,
+    consultationFee: 10,
   },
   {
     id: "6",
-    name: "Downtown ENT Clinic",
+    name: "Sir Ganga Ram Hospital",
     specialty: ["ENT Specialist", "Allergist", "Sleep Specialist"],
-    address: "888 Downtown Drive",
+    address: "Rajinder Nagar, New Delhi",
     distance: 1.5,
-    rating: 4.4,
-    reviewCount: 98,
+    rating: 4.5,
+    reviewCount: 398,
     priceRange: "medium",
     acceptsWalkIn: false,
-    hours: "9:00 AM - 6:00 PM",
-    phone: "(555) 678-9012",
-    lat: 37.7749,
-    lng: -122.4094,
+    hours: "9:00 AM - 5:00 PM",
+    phone: "+91 11 2575 0000",
+    lat: 28.6406,
+    lng: 77.1898,
+    consultationFee: 700,
   },
   {
     id: "7",
-    name: "Physical Therapy & Rehab",
-    specialty: ["Physical Therapist", "Sports Medicine", "Orthopedist"],
-    address: "777 Recovery Road",
-    distance: 2.8,
-    rating: 4.7,
-    reviewCount: 203,
-    priceRange: "medium",
+    name: "Medanta - The Medicity",
+    specialty: ["Orthopedist", "Sports Medicine", "Physical Therapist"],
+    address: "Sector 38, Gurugram",
+    distance: 12.8,
+    rating: 4.9,
+    reviewCount: 756,
+    priceRange: "high",
     acceptsWalkIn: false,
-    hours: "7:00 AM - 8:00 PM",
-    phone: "(555) 789-0123",
-    lat: 37.7599,
-    lng: -122.4494,
+    hours: "7:00 AM - 9:00 PM",
+    phone: "+91 124 4141 414",
+    lat: 28.4395,
+    lng: 77.0426,
+    consultationFee: 2000,
   },
   {
     id: "8",
-    name: "Eye Care Associates",
+    name: "Centre for Sight",
     specialty: ["Ophthalmologist", "Optometrist"],
-    address: "222 Vision Lane",
-    distance: 1.9,
-    rating: 4.5,
-    reviewCount: 145,
+    address: "Dwarka, New Delhi",
+    distance: 5.9,
+    rating: 4.4,
+    reviewCount: 245,
     priceRange: "medium",
     acceptsWalkIn: true,
-    hours: "9:00 AM - 5:30 PM",
-    phone: "(555) 890-1234",
+    hours: "9:00 AM - 6:00 PM",
+    phone: "+91 11 4700 0000",
     waitTime: "20 min",
-    lat: 37.7819,
-    lng: -122.4144,
+    lat: 28.5921,
+    lng: 77.0460,
+    consultationFee: 600,
+  },
+  {
+    id: "9",
+    name: "Safdarjung Hospital",
+    specialty: ["General Physician", "Surgery", "Emergency", "All Specialties"],
+    address: "Ring Road, New Delhi",
+    distance: 2.3,
+    rating: 4.1,
+    reviewCount: 892,
+    priceRange: "low",
+    acceptsWalkIn: true,
+    hours: "24/7",
+    phone: "+91 11 2673 0000",
+    waitTime: "60 min",
+    lat: 28.5684,
+    lng: 77.2074,
+    consultationFee: 10,
+  },
+  {
+    id: "10",
+    name: "BLK Super Speciality Hospital",
+    specialty: ["Cardiologist", "Oncologist", "Gastroenterologist"],
+    address: "Pusa Road, New Delhi",
+    distance: 4.2,
+    rating: 4.6,
+    reviewCount: 534,
+    priceRange: "high",
+    acceptsWalkIn: false,
+    hours: "8:00 AM - 8:00 PM",
+    phone: "+91 11 3040 3040",
+    lat: 28.6467,
+    lng: 77.1854,
+    consultationFee: 1800,
   },
 ]
 
@@ -224,21 +266,20 @@ export function ClinicFinder({ initialSpecialist }: ClinicFinderProps) {
         case "rating":
           return b.rating - a.rating
         case "price":
-          const priceOrder = { low: 0, medium: 1, high: 2 }
-          return priceOrder[a.priceRange] - priceOrder[b.priceRange]
+          return a.consultationFee - b.consultationFee
         default:
           return 0
       }
     })
 
-  const getPriceDisplay = (range: "low" | "medium" | "high") => {
+  const getPriceDisplay = (range: "low" | "medium" | "high", fee: number) => {
     switch (range) {
       case "low":
-        return { label: "Affordable", icon: "$", color: "text-green-600 dark:text-green-400" }
+        return { label: "Affordable", icon: "₹", color: "text-green-600 dark:text-green-400", fee: `₹${fee}` }
       case "medium":
-        return { label: "Moderate", icon: "$$", color: "text-amber-600 dark:text-amber-400" }
+        return { label: "Moderate", icon: "₹₹", color: "text-amber-600 dark:text-amber-400", fee: `₹${fee}` }
       case "high":
-        return { label: "Premium", icon: "$$$", color: "text-rose-600 dark:text-rose-400" }
+        return { label: "Premium", icon: "₹₹₹", color: "text-rose-600 dark:text-rose-400", fee: `₹${fee}` }
     }
   }
 
@@ -252,7 +293,7 @@ export function ClinicFinder({ initialSpecialist }: ClinicFinderProps) {
             Find Clinics Near You
           </CardTitle>
           <CardDescription>
-            Search for affordable clinics and medical specialists in your area
+            Search for affordable clinics and medical specialists across India
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -260,7 +301,7 @@ export function ClinicFinder({ initialSpecialist }: ClinicFinderProps) {
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
-              placeholder="Search by specialty or clinic name..."
+              placeholder="Search by specialty or hospital name..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="pl-10"
@@ -297,13 +338,13 @@ export function ClinicFinder({ initialSpecialist }: ClinicFinderProps) {
                 onClick={() => setFilterWalkIn(!filterWalkIn)}
                 className="gap-2"
               >
-                Walk-in
+                Walk-in OPD
               </Button>
 
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="outline" size="sm" className="gap-2">
-                    <DollarSign className="h-4 w-4" />
+                    <IndianRupee className="h-4 w-4" />
                     Price: {filterPriceRange === "all" ? "All" : filterPriceRange}
                     <ChevronDown className="h-3 w-3" />
                   </Button>
@@ -313,13 +354,13 @@ export function ClinicFinder({ initialSpecialist }: ClinicFinderProps) {
                     All Prices
                   </DropdownMenuItem>
                   <DropdownMenuItem onClick={() => setFilterPriceRange("low")}>
-                    $ Affordable
+                    ₹ Govt/Affordable (Under ₹100)
                   </DropdownMenuItem>
                   <DropdownMenuItem onClick={() => setFilterPriceRange("medium")}>
-                    $$ Moderate
+                    ₹₹ Moderate (₹100 - ₹1000)
                   </DropdownMenuItem>
                   <DropdownMenuItem onClick={() => setFilterPriceRange("high")}>
-                    $$$ Premium
+                    ₹₹₹ Premium (Above ₹1000)
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
@@ -350,7 +391,7 @@ export function ClinicFinder({ initialSpecialist }: ClinicFinderProps) {
 
           {/* Results Count */}
           <p className="text-sm text-muted-foreground">
-            {filteredClinics.length} clinics found
+            {filteredClinics.length} hospitals/clinics found
           </p>
         </CardContent>
       </Card>
@@ -376,7 +417,7 @@ export function ClinicFinder({ initialSpecialist }: ClinicFinderProps) {
       {/* Clinic List */}
       <div className="space-y-4">
         {filteredClinics.map((clinic, idx) => {
-          const price = getPriceDisplay(clinic.priceRange)
+          const price = getPriceDisplay(clinic.priceRange, clinic.consultationFee)
           const isSelected = selectedClinic === clinic.id
           
           return (
@@ -410,7 +451,7 @@ export function ClinicFinder({ initialSpecialist }: ClinicFinderProps) {
                             <h3 className="font-semibold text-lg">{clinic.name}</h3>
                             {clinic.acceptsWalkIn && (
                               <Badge variant="secondary" className="text-xs bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400">
-                                Walk-in
+                                Walk-in OPD
                               </Badge>
                             )}
                           </div>
@@ -438,14 +479,15 @@ export function ClinicFinder({ initialSpecialist }: ClinicFinderProps) {
                           <div className="flex items-center gap-4 mt-3 text-sm text-muted-foreground">
                             <span className="flex items-center gap-1">
                               <MapPin className="h-3.5 w-3.5" />
-                              {clinic.distance} mi
+                              {clinic.distance} km
                             </span>
                             <span className="flex items-center gap-1">
                               <Star className="h-3.5 w-3.5 fill-amber-400 text-amber-400" />
                               {clinic.rating} ({clinic.reviewCount})
                             </span>
-                            <span className={cn("font-medium", price.color)}>
-                              {price.icon}
+                            <span className={cn("font-medium flex items-center gap-0.5", price.color)}>
+                              <IndianRupee className="h-3 w-3" />
+                              {clinic.consultationFee}
                             </span>
                             {clinic.waitTime && (
                               <span className="flex items-center gap-1">
@@ -495,7 +537,7 @@ export function ClinicFinder({ initialSpecialist }: ClinicFinderProps) {
           <Card className="glass-card">
             <CardContent className="py-12 text-center">
               <MapPin className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-              <h3 className="font-semibold text-lg">No clinics found</h3>
+              <h3 className="font-semibold text-lg">No hospitals found</h3>
               <p className="text-muted-foreground mt-1">
                 Try adjusting your search or filters
               </p>

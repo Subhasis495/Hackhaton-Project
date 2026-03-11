@@ -52,12 +52,12 @@ const getWellnessResponse = (message: string): string => {
     return "Here's a quick desk stretch routine: 1) Roll your shoulders backward 10 times, 2) Tilt your head to each side for 15 seconds, 3) Stand and reach for the ceiling, 4) Twist your torso gently side to side. These stretches help prevent tension and improve posture. Ready to try them?"
   }
   
-  if (lowerMessage.includes("clinic") || lowerMessage.includes("doctor") || lowerMessage.includes("hospital") || lowerMessage.includes("medical")) {
-    return "You can find nearby clinics using our Clinic Finder feature. It shows affordable healthcare options near you, including ratings, pricing, and walk-in availability. Would you like me to help you search for a specific type of specialist?"
+  if (lowerMessage.includes("clinic") || lowerMessage.includes("doctor") || lowerMessage.includes("hospital") || lowerMessage.includes("medical") || lowerMessage.includes("aiims") || lowerMessage.includes("apollo")) {
+    return "You can find nearby hospitals and clinics using our Clinic Finder feature. It shows healthcare options across India from government hospitals like AIIMS and Safdarjung (starting from ₹10) to private hospitals like Apollo, Fortis, and Max. All listings include ratings, consultation fees in Rupees, and OPD availability. Would you like me to help you search for a specific type of specialist?"
   }
   
   if (lowerMessage.includes("symptom") || lowerMessage.includes("sick") || lowerMessage.includes("pain") || lowerMessage.includes("feel")) {
-    return "If you're experiencing symptoms, our Symptom Checker can help identify which type of specialist might be most appropriate for your concerns. It uses a triage system to assess urgency. Would you like to describe your symptoms?"
+    return "If you're experiencing symptoms, our Symptom Checker can help identify which type of specialist might be most appropriate for your concerns. It uses a triage system (Green/Yellow/Red) to assess urgency. For emergencies in India, call 112 (National Emergency) or 102 (Ambulance). Would you like to describe your symptoms?"
   }
   
   if (lowerMessage.includes("break") || lowerMessage.includes("tired") || lowerMessage.includes("focus") || lowerMessage.includes("productivity")) {
@@ -68,8 +68,8 @@ const getWellnessResponse = (message: string): string => {
     return "Good sleep hygiene is crucial for wellness. Tips: 1) Maintain a consistent sleep schedule, 2) Avoid screens 1 hour before bed, 3) Keep your room cool and dark, 4) Try relaxation techniques like deep breathing. Aim for 7-9 hours per night."
   }
   
-  if (lowerMessage.includes("hello") || lowerMessage.includes("hi") || lowerMessage.includes("hey")) {
-    return "Hello! I'm your wellness assistant. I can help you with breathing exercises, hydration tips, stretching routines, finding clinics, and general wellness advice. What would you like to know about today?"
+  if (lowerMessage.includes("hello") || lowerMessage.includes("hi") || lowerMessage.includes("hey") || lowerMessage.includes("namaste")) {
+    return "Namaste! I'm your wellness assistant. I can help you with breathing exercises (Pranayama), hydration tips, stretching routines (Yoga stretches), finding hospitals and clinics across India, and general wellness advice. What would you like to know about today?"
   }
   
   if (lowerMessage.includes("thank")) {
@@ -86,7 +86,7 @@ export function WellnessChatbot() {
     {
       id: "welcome",
       role: "assistant",
-      content: "Hi there! I'm your wellness assistant. How can I help you stay healthy today? You can ask me about breathing exercises, hydration, stretching, or finding healthcare providers.",
+      content: "Namaste! I'm your wellness assistant. How can I help you stay healthy today? You can ask me about breathing exercises (Pranayama), hydration, stretching, or finding hospitals and clinics across India.",
       timestamp: new Date(),
     },
   ])

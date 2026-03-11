@@ -5,7 +5,7 @@ import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet"
 import { Icon, LatLngExpression } from "leaflet"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { Navigation, Phone, Clock, Star } from "lucide-react"
+import { Navigation, Phone, Clock, Star, IndianRupee } from "lucide-react"
 import "leaflet/dist/leaflet.css"
 
 interface Clinic {
@@ -23,6 +23,7 @@ interface Clinic {
   waitTime?: string
   lat: number
   lng: number
+  consultationFee?: number
 }
 
 interface ClinicMapProps {
@@ -57,8 +58,8 @@ export function ClinicMap({ clinics, selectedClinic, onSelectClinic }: ClinicMap
   const [userLocation, setUserLocation] = useState<[number, number] | null>(null)
   const [isLocating, setIsLocating] = useState(false)
   
-  // Default center (San Francisco)
-  const defaultCenter: [number, number] = [37.7749, -122.4194]
+  // Default center (New Delhi, India)
+  const defaultCenter: [number, number] = [28.6139, 77.2090]
   const center = userLocation || defaultCenter
   
   const handleLocate = () => {
@@ -76,11 +77,12 @@ export function ClinicMap({ clinics, selectedClinic, onSelectClinic }: ClinicMap
     }
   }
   
-  const getPriceLabel = (range: "low" | "medium" | "high") => {
+  const getPriceLabel = (range: "low" | "medium" | "high", fee?: number) => {
+    if (fee) return `₹${fee}`
     switch (range) {
-      case "low": return "$"
-      case "medium": return "$$"
-      case "high": return "$$$"
+      case "low": return "₹"
+      case "medium": return "₹₹"
+      case "high": return "₹₹₹"
     }
   }
 
@@ -88,7 +90,7 @@ export function ClinicMap({ clinics, selectedClinic, onSelectClinic }: ClinicMap
     <div className="relative h-[400px] w-full rounded-xl overflow-hidden border">
       <MapContainer
         center={center}
-        zoom={13}
+        zoom={12}
         scrollWheelZoom={true}
         className="h-full w-full z-0"
       >
@@ -96,7 +98,7 @@ export function ClinicMap({ clinics, selectedClinic, onSelectClinic }: ClinicMap
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
-        <MapController center={center} zoom={13} />
+        <MapController center={center} zoom={12} />
         
         {/* User location marker */}
         {userLocation && (
@@ -134,10 +136,11 @@ export function ClinicMap({ clinics, selectedClinic, onSelectClinic }: ClinicMap
                 <h3 className="font-semibold text-base">{clinic.name}</h3>
                 <div className="flex items-center gap-2 flex-wrap">
                   {clinic.acceptsWalkIn && (
-                    <Badge variant="secondary" className="text-xs">Walk-in</Badge>
+                    <Badge variant="secondary" className="text-xs">Walk-in OPD</Badge>
                   )}
-                  <span className="text-xs text-muted-foreground">
-                    {getPriceLabel(clinic.priceRange)}
+                  <span className="text-xs text-muted-foreground flex items-center gap-0.5">
+                    <IndianRupee className="h-3 w-3" />
+                    {clinic.consultationFee || getPriceLabel(clinic.priceRange)}
                   </span>
                 </div>
                 <div className="flex items-center gap-1 text-xs text-muted-foreground">

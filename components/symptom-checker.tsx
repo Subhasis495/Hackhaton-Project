@@ -69,11 +69,11 @@ const symptomToSpecialist: Record<string, SpecialistRecommendation[]> = {
     { specialist: "Infectious Disease Specialist", relevance: "low", description: "For persistent or unexplained fever", severity: "yellow" },
   ],
   "Chest Pain": [
-    { specialist: "Emergency Room", relevance: "high", description: "If severe or with shortness of breath - CALL 911", severity: "red" },
+    { specialist: "Emergency Room", relevance: "high", description: "If severe or with shortness of breath - CALL 112", severity: "red" },
     { specialist: "Cardiologist", relevance: "high", description: "For heart-related concerns", severity: "yellow" },
   ],
   "Shortness of Breath": [
-    { specialist: "Emergency Room", relevance: "high", description: "If sudden or severe - CALL 911", severity: "red" },
+    { specialist: "Emergency Room", relevance: "high", description: "If sudden or severe - CALL 112", severity: "red" },
     { specialist: "Pulmonologist", relevance: "high", description: "For respiratory assessment", severity: "yellow" },
   ],
   "Back Pain": [
@@ -421,12 +421,18 @@ export function SymptomChecker() {
                         Seek Immediate Medical Attention
                       </p>
                       <p className="text-sm text-red-600 dark:text-red-300 mt-1">
-                        Based on your symptoms, you should consider calling 911 or going to the nearest emergency room immediately.
+                        Based on your symptoms, you should consider calling 112 (National Emergency) or 102 (Ambulance) or going to the nearest emergency room immediately.
                       </p>
-                      <Button variant="destructive" size="sm" className="mt-3 gap-2">
-                        <Phone className="h-4 w-4" />
-                        Call 911
-                      </Button>
+                      <div className="flex gap-2 mt-3">
+                        <Button variant="destructive" size="sm" className="gap-2">
+                          <Phone className="h-4 w-4" />
+                          Call 112
+                        </Button>
+                        <Button variant="outline" size="sm" className="gap-2 border-red-300 text-red-700 hover:bg-red-100 dark:border-red-800 dark:text-red-400 dark:hover:bg-red-950">
+                          <Phone className="h-4 w-4" />
+                          Call 102 (Ambulance)
+                        </Button>
+                      </div>
                     </div>
                   </motion.div>
                 )}
