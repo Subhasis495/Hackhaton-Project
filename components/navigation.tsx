@@ -2,15 +2,20 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { motion } from "framer-motion"
+import { motion, AnimatePresence } from "framer-motion"
 import { cn } from "@/lib/utils"
+import { useAuth } from "@/components/auth-provider"
+import { useState, useRef, useEffect } from "react"
 import { 
   Timer, 
   Activity, 
   Stethoscope, 
   MapPin, 
   Trophy,
-  Leaf
+  Leaf,
+  LogOut,
+  ChevronDown,
+  User
 } from "lucide-react"
 
 const navItems = [
@@ -22,6 +27,23 @@ const navItems = [
 
 export function Navigation() {
   const pathname = usePathname()
+  const { user, signOut, loading } = useAuth()
+  const [showDropdown, setShowDropdown] = useState(false)
+  const dropdownRef = useRef<HTMLDivElement>(null)
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setShowDropdown(false)
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside)
+    return () => document.removeEventListener("mousedown", handleClickOutside)
+  }, [])
+
+  const displayName = user?.user_metadata?.full_name || user?.email?.split("@")[0] || "User"
+  const initials = displayName.split(" ").map((n: string) => n[0]).join("").toUpperCase().slice(0, 2)
 
   return (
     <header className="sticky top-0 z-50 w-full glass-card border-b border-border/50 rounded-none">
@@ -74,15 +96,81 @@ export function Navigation() {
           })}
         </nav>
 
+        {/* User Profile Section */}
         <motion.div 
           className="flex items-center gap-3"
           initial={{ opacity: 0, x: 20 }}
           animate={{ opacity: 1, x: 0 }}
         >
-          <div className="hidden sm:flex items-center gap-2 px-4 py-2 rounded-full glass-card border border-primary/20 shadow-sm">
-            <Trophy className="h-4 w-4 text-primary" />
-            <span className="text-sm font-semibold">40 pts</span>
-          </div>
+          {user && !loading ? (
+            <div className="relative" ref={dropdownRef}>
+              <motion.button
+                className="flex items-center gap-2 px-3 py-2 rounded-full glass-card border border-primary/20 shadow-sm hover:border-primary/40 transition-all cursor-pointer"
+                onClick={() => setShowDropdown(!showDropdown)}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+              >
+                <div className="h-7 w-7 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center text-xs font-bold text-white">
+                  {initials}
+                </div>
+                <span className="hidden sm:block text-sm font-medium max-w-[120px] truncate">
+                  {displayName}
+                </span>
+                <ChevronDown className={cn(
+                  "h-3 w-3 text-muted-foreground transition-transform duration-200",
+                  showDropdown && "rotate-180"
+                )} />
+              </motion.button>
+
+              {/* Dropdown Menu */}
+              <AnimatePresence>
+                {showDropdown && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 8, scale: 0.95 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: 8, scale: 0.95 }}
+                    transition={{ duration: 0.15 }}
+                    className="absolute right-0 mt-2 w-64 rounded-xl glass-card border border-border/50 shadow-xl overflow-hidden z-50"
+                  >
+                    <div className="p-4 border-b border-border/50">
+                      <div className="flex items-center gap-3">
+                        <div className="h-10 w-10 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center text-sm font-bold text-white">
+                          {initials}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-semibold truncate">{displayName}</p>
+                          <p className="text-xs text-muted-foreground truncate">{user.email}</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="p-2">
+                      <button
+                        onClick={() => {
+                          setShowDropdown(false)
+                          signOut()
+                        }}
+                        className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-destructive-foreground hover:bg-destructive/10 transition-colors cursor-pointer"
+                      >
+                        <LogOut className="h-4 w-4" />
+                        Sign Out
+                      </button>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+          ) : !loading ? (
+            <Link href="/auth">
+              <motion.div 
+                className="flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-primary to-accent text-primary-foreground text-sm font-semibold shadow-lg shadow-primary/20"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <User className="h-4 w-4" />
+                Sign In
+              </motion.div>
+            </Link>
+          ) : null}
         </motion.div>
       </div>
 
@@ -123,3 +211,4 @@ export function Navigation() {
     </header>
   )
 }
+

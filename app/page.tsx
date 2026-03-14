@@ -1,7 +1,8 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useMemo } from "react"
 import { motion } from "framer-motion"
+import { useAuth } from "@/components/auth-provider"
 import { Navigation } from "@/components/navigation"
 import { WorkTimer } from "@/components/work-timer"
 import { GamificationStats } from "@/components/gamification-stats"
@@ -22,6 +23,7 @@ import {
 } from "lucide-react"
 
 export default function HomePage() {
+  const { user } = useAuth()
   const [points, setPoints] = useState(0)
   const [streak] = useState(1)
   const [breaksCompleted, setBreaksCompleted] = useState(0)
@@ -30,6 +32,15 @@ export default function HomePage() {
     breathing: 0,
     stretching: 0,
   })
+
+  const greeting = useMemo(() => {
+    const hour = new Date().getHours()
+    if (hour < 12) return "Good morning"
+    if (hour < 17) return "Good afternoon"
+    return "Good evening"
+  }, [])
+
+  const firstName = user?.user_metadata?.full_name?.split(" ")[0] || "there"
 
   const handlePointsEarned = (earned: number) => {
     setPoints((prev) => prev + earned)
@@ -83,9 +94,9 @@ export default function HomePage() {
               animate={{ opacity: 1 }}
               transition={{ delay: 0.3 }}
             >
-              Take Better Care of Yourself,{" "}
+              {greeting}, {firstName}!{" "}
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-accent">
-                One Micro-Break at a Time
+                Ready for a Healthy Day?
               </span>
             </motion.h1>
             <motion.p 
@@ -286,8 +297,8 @@ export default function HomePage() {
 
       {/* Footer */}
       <footer className="border-t mt-20 bg-background/50 backdrop-blur-sm">
-        <div className="container px-4 py-8">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+        <div className="container px-4 py-10">
+          <div className="grid md:grid-cols-3 gap-8 items-center">
             <motion.div 
               className="flex items-center gap-3"
               whileHover={{ scale: 1.02 }}
@@ -295,15 +306,30 @@ export default function HomePage() {
               <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-primary to-accent flex items-center justify-center">
                 <Heart className="h-5 w-5 text-primary-foreground" />
               </div>
-              <span className="font-bold text-xl">WellnessNudge</span>
+              <div>
+                <span className="font-bold text-lg block">WellnessNudge</span>
+                <span className="text-xs text-muted-foreground">Your Health Companion</span>
+              </div>
             </motion.div>
             <p className="text-sm text-muted-foreground text-center">
-              Take care of your health. One break at a time.
+              Take care of your health. One micro-break at a time. 🌿
             </p>
-            <div className="flex gap-2">
-              <Button variant="ghost" size="sm">About</Button>
-              <Button variant="ghost" size="sm">Privacy</Button>
-              <Button variant="ghost" size="sm">Help</Button>
+            <div className="flex items-center justify-end gap-4">
+              <div className="flex gap-1">
+                <Button variant="ghost" size="sm">About</Button>
+                <Button variant="ghost" size="sm">Privacy</Button>
+                <Button variant="ghost" size="sm">Help</Button>
+              </div>
+            </div>
+          </div>
+          <div className="mt-8 pt-6 border-t border-border/50 flex flex-col sm:flex-row items-center justify-between gap-2">
+            <p className="text-xs text-muted-foreground">
+              © {new Date().getFullYear()} WellnessNudge. Built with ❤️ for Hackathon 2k26.
+            </p>
+            <div className="flex items-center gap-2">
+              <span className="text-xs px-2.5 py-1 rounded-full bg-primary/10 text-primary font-medium">
+                v1.0.0
+              </span>
             </div>
           </div>
         </div>
