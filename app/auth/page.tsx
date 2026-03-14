@@ -115,7 +115,7 @@ export default function AuthPage() {
             <Leaf className="h-8 w-8 text-white" />
           </motion.div>
           <h1 className="text-3xl font-bold tracking-tight bg-gradient-to-r from-foreground to-muted-foreground bg-clip-text text-transparent">
-            WellnessNudge
+            Health Pilot
           </h1>
           <p className="text-muted-foreground mt-2 text-sm">
             Your personal health & wellbeing companion
@@ -306,7 +306,7 @@ export default function AuthPage() {
           animate={{ opacity: 1 }}
           transition={{ delay: 0.8 }}
         >
-          By continuing, you agree to WellnessNudge&apos;s Terms of Service and Privacy Policy
+          By continuing, you agree to Health Pilot&apos;s Terms of Service and Privacy Policy
         </motion.p>
       </motion.div>
     </div>

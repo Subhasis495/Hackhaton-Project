@@ -111,7 +111,7 @@ export default function NotFound() {
           <div className="h-6 w-6 rounded-lg bg-gradient-to-br from-primary to-accent flex items-center justify-center">
             <Leaf className="h-3 w-3 text-white" />
           </div>
-          <span className="text-sm font-medium">WellnessNudge</span>
+          <span className="text-sm font-medium">Health Pilot</span>
         </motion.div>
       </div>
     </div>

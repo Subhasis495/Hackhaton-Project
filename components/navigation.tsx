@@ -13,14 +13,16 @@ import {
   MapPin, 
   Trophy,
   Leaf,
-  LogOut,
   ChevronDown,
-  User
+  User,
+  HeartPulse,
+  LogOut
 } from "lucide-react"
 
 const navItems = [
   { href: "/", label: "Dashboard", icon: Activity },
   { href: "/timer", label: "Focus Timer", icon: Timer },
+  { href: "/burnout", label: "Burnout Check", icon: HeartPulse },
   { href: "/symptoms", label: "Symptom Triage", icon: Stethoscope },
   { href: "/clinics", label: "Find Clinics", icon: MapPin },
 ]
@@ -57,7 +59,7 @@ export function Navigation() {
             <Leaf className="h-5 w-5 text-white" />
           </motion.div>
           <span className="text-xl font-semibold tracking-tight bg-gradient-to-r from-foreground to-muted-foreground bg-clip-text">
-            WellnessNudge
+            Health Pilot
           </span>
         </Link>
 

@@ -16,6 +16,8 @@ import {
 import { cn } from "@/lib/utils"
 import { BreathingExercise } from "./breathing-exercise"
 import { StretchingExercise } from "./stretching-exercise"
+import { logBreak } from "@/backend/wellness.actions"
+import { useAuth } from "@/components/auth-provider"
 
 type BreakType = "hydration" | "breathing" | "stretching"
 
@@ -57,10 +59,11 @@ const breaks: Break[] = [
 
 interface WorkTimerProps {
   onPointsEarned?: (points: number) => void
-  onBreakCompleted?: () => void
+  onBreakCompleted?: (type: BreakType) => void
 }
 
 export function WorkTimer({ onPointsEarned, onBreakCompleted }: WorkTimerProps) {
+  const { user } = useAuth()
   const [workDuration] = useState(25 * 60) // 25 minutes
   const [timeRemaining, setTimeRemaining] = useState(workDuration)
   const [isRunning, setIsRunning] = useState(false)
@@ -68,6 +71,7 @@ export function WorkTimer({ onPointsEarned, onBreakCompleted }: WorkTimerProps) 
   const [currentBreak, setCurrentBreak] = useState<Break | null>(null)
   const [breakTimeRemaining, setBreakTimeRemaining] = useState(0)
   const [activeExercise, setActiveExercise] = useState<BreakType | null>(null)
+  const [isLogging, setIsLogging] = useState(false)
 
   const triggerBreak = useCallback(() => {
     const randomBreak = breaks[Math.floor(Math.random() * breaks.length)]
@@ -119,10 +123,15 @@ export function WorkTimer({ onPointsEarned, onBreakCompleted }: WorkTimerProps) 
 
   const progress = ((workDuration - timeRemaining) / workDuration) * 100
 
-  const handleCompleteBreak = () => {
+  const handleCompleteBreak = async () => {
     if (currentBreak) {
+      if (user) {
+        setIsLogging(true)
+        await logBreak(currentBreak.type, currentBreak.points, currentBreak.duration)
+        setIsLogging(false)
+      }
       onPointsEarned?.(currentBreak.points)
-      onBreakCompleted?.()
+      onBreakCompleted?.(currentBreak.type)
     }
     setShowBreak(false)
     setCurrentBreak(null)
@@ -193,14 +202,16 @@ export function WorkTimer({ onPointsEarned, onBreakCompleted }: WorkTimerProps) 
                 onClick={handleCompleteBreak} 
                 className="flex-1"
                 size="lg"
+                disabled={isLogging}
               >
-                I Drank Water
+                {isLogging ? "Saving..." : "I Drank Water"}
               </Button>
             ) : (
               <Button 
                 onClick={handleStartExercise} 
                 className="flex-1"
                 size="lg"
+                disabled={isLogging}
               >
                 Start Exercise
               </Button>

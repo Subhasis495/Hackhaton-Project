@@ -1,7 +1,9 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { motion } from "framer-motion"
+import { useAuth } from "@/components/auth-provider"
+import { getUserStats, getRecentBreaks } from "@/backend/wellness.actions"
 import { Navigation } from "@/components/navigation"
 import { WorkTimer } from "@/components/work-timer"
 import { VirtualPlant } from "@/components/virtual-plant"
@@ -23,12 +25,7 @@ import {
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 
-const recentActivity = [
-  { type: "breathing", time: "10 minutes ago", points: 10 },
-  { type: "hydration", time: "45 minutes ago", points: 5 },
-  { type: "stretching", time: "2 hours ago", points: 15 },
-  { type: "breathing", time: "3 hours ago", points: 10 },
-]
+
 
 const activityIcons = {
   breathing: Wind,
@@ -43,14 +40,50 @@ const activityColors = {
 }
 
 export default function TimerPage() {
-  const [points, setPoints] = useState(40)
-  const [streak] = useState(3)
-  const [breaksCompleted, setBreaksCompleted] = useState(4)
+  const { user } = useAuth()
+  const [points, setPoints] = useState(0)
+  const [streak, setStreak] = useState(0)
+  const [breaksCompleted, setBreaksCompleted] = useState(0)
   const [todayBreaks, setTodayBreaks] = useState({
-    hydration: 1,
-    breathing: 2,
-    stretching: 1,
+    hydration: 0,
+    breathing: 0,
+    stretching: 0,
   })
+  const [recentActive, setRecentActive] = useState<any[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+
+  useEffect(() => {
+    async function fetchStats() {
+      if (user) {
+        try {
+          const stats = await getUserStats()
+          setPoints(stats.points)
+          setStreak(stats.streak)
+          setBreaksCompleted(stats.breaksCompleted)
+          setTodayBreaks(stats.todayBreaks)
+          
+          const recent = await getRecentBreaks()
+          setRecentActive(recent)
+        } catch (error) {
+          console.error("Failed to fetch stats", error)
+        }
+      } else {
+        // Fallback for unauthenticated users
+        setPoints(40)
+        setStreak(3)
+        setBreaksCompleted(4)
+        setTodayBreaks({ hydration: 1, breathing: 2, stretching: 1 })
+        setRecentActive([
+          { type: "breathing", time: "10 minutes ago", points: 10 },
+          { type: "hydration", time: "45 minutes ago", points: 5 },
+          { type: "stretching", time: "2 hours ago", points: 15 },
+        ])
+      }
+      setIsLoading(false)
+    }
+
+    fetchStats()
+  }, [user])
 
   const handlePointsEarned = (earned: number) => {
     setPoints((prev) => prev + earned)
@@ -58,18 +91,17 @@ export default function TimerPage() {
 
   const handleBreakCompleted = (type?: "hydration" | "breathing" | "stretching") => {
     setBreaksCompleted((prev) => prev + 1)
+    
+    // Optimistic UI updates
     if (type) {
       setTodayBreaks((prev) => ({
         ...prev,
         [type]: prev[type] + 1,
       }))
-    } else {
-      const types = ["hydration", "breathing", "stretching"] as const
-      const randomType = types[Math.floor(Math.random() * types.length)]
-      setTodayBreaks((prev) => ({
-        ...prev,
-        [randomType]: prev[randomType] + 1,
-      }))
+      setRecentActive(prev => [
+        { type, time: "Just now", points: type === "hydration" ? 5 : type === "breathing" ? 10 : 15 },
+        ...prev.slice(0, 4)
+      ])
     }
   }
 
@@ -142,7 +174,12 @@ export default function TimerPage() {
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-3">
-                      {recentActivity.map((activity, idx) => {
+                      {recentActive.length === 0 && (
+                        <p className="text-sm text-center py-4 text-muted-foreground">
+                          No recent breaks taken yet. Time to start!
+                        </p>
+                      )}
+                      {recentActive.map((activity, idx) => {
                         const Icon = activityIcons[activity.type as keyof typeof activityIcons]
                         const colorClass = activityColors[activity.type as keyof typeof activityColors]
                         

@@ -105,7 +105,7 @@ export default function HomePage() {
               animate={{ opacity: 1 }}
               transition={{ delay: 0.4 }}
             >
-              WellnessNudge helps you maintain healthy habits throughout your workday with gamified reminders for stretching, hydration, and breathing exercises.
+              Health Pilot helps you maintain healthy habits throughout your workday with gamified reminders for stretching, hydration, and breathing exercises.
             </motion.p>
           </div>
         </motion.section>
@@ -307,7 +307,7 @@ export default function HomePage() {
                 <Heart className="h-5 w-5 text-primary-foreground" />
               </div>
               <div>
-                <span className="font-bold text-lg block">WellnessNudge</span>
+                <span className="font-bold text-lg block">Health Pilot</span>
                 <span className="text-xs text-muted-foreground">Your Health Companion</span>
               </div>
             </motion.div>
@@ -324,7 +324,7 @@ export default function HomePage() {
           </div>
           <div className="mt-8 pt-6 border-t border-border/50 flex flex-col sm:flex-row items-center justify-between gap-2">
             <p className="text-xs text-muted-foreground">
-              © {new Date().getFullYear()} WellnessNudge. Built with ❤️ for Hackathon 2k26.
+              © {new Date().getFullYear()} Health Pilot. Built with ❤️ for Hackathon 2k26.
             </p>
             <div className="flex items-center gap-2">
               <span className="text-xs px-2.5 py-1 rounded-full bg-primary/10 text-primary font-medium">

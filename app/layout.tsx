@@ -16,7 +16,7 @@ const jakarta = Plus_Jakarta_Sans({
 });
 
 export const metadata: Metadata = {
-  title: 'WellnessNudge - Your Health & Wellbeing Companion',
+  title: 'Health Pilot - Your Health & Wellbeing Companion',
   description: 'Take micro-breaks, track your wellness, and find healthcare specialists near you. Gamified wellness reminders for a healthier workday.',
   keywords: ['wellness', 'health', 'micro-breaks', 'stretching', 'hydration', 'breathing', 'clinic finder', 'symptom checker'],
 }

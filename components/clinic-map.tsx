@@ -30,6 +30,7 @@ interface ClinicMapProps {
   clinics: Clinic[]
   selectedClinic?: string | null
   onSelectClinic?: (id: string) => void
+  userLocation?: { lat: number; lng: number } | null
 }
 
 // Custom marker icon
@@ -54,9 +55,15 @@ function MapController({ center, zoom }: { center: LatLngExpression; zoom: numbe
   return null
 }
 
-export function ClinicMap({ clinics, selectedClinic, onSelectClinic }: ClinicMapProps) {
+export function ClinicMap({ clinics, selectedClinic, onSelectClinic, userLocation: parentUserLocation }: ClinicMapProps) {
   const [userLocation, setUserLocation] = useState<[number, number] | null>(null)
   const [isLocating, setIsLocating] = useState(false)
+  
+  useEffect(() => {
+    if (parentUserLocation) {
+      setUserLocation([parentUserLocation.lat, parentUserLocation.lng])
+    }
+  }, [parentUserLocation])
   
   // Default center (New Delhi, India)
   const defaultCenter: [number, number] = [28.6139, 77.2090]
