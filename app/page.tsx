@@ -19,7 +19,9 @@ import {
   Heart,
   Sparkles,
   TrendingUp,
-  Leaf
+  Leaf,
+  Activity,
+  CalendarCheck
 } from "lucide-react"
 
 export default function HomePage() {
@@ -54,7 +56,6 @@ export default function HomePage() {
         [type]: prev[type] + 1,
       }))
     } else {
-      // Randomly increment one of the break types for demo
       const types = ["hydration", "breathing", "stretching"] as const
       const randomType = types[Math.floor(Math.random() * types.length)]
       setTodayBreaks((prev) => ({
@@ -65,89 +66,162 @@ export default function HomePage() {
   }
 
   return (
-    <div className="min-h-screen bg-background gradient-mesh">
+    <div className="min-h-screen bg-background gradient-mesh overflow-x-hidden">
       <Navigation />
       
-      <main className="container px-4 py-8">
-        {/* Hero Section */}
+      <main className="container px-4 py-8 mx-auto max-w-7xl">
+        {/* Premium Hero Section */}
         <motion.section 
-          className="mb-12"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
+          className="mb-8"
+          initial={{ opacity: 0, scale: 0.95, y: 20 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          transition={{ duration: 0.6, ease: "easeOut" }}
         >
-          <div className="max-w-3xl">
-            <motion.div 
-              className="flex items-center gap-2 text-primary mb-4"
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.2 }}
-            >
-              <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center">
-                <Heart className="h-4 w-4" />
+          <div className="relative rounded-3xl overflow-hidden glass border border-primary/20 bg-gradient-to-br from-primary/10 via-background/40 to-accent/10 p-8 md:p-12 shadow-2xl">
+            {/* Background glowing orbs for depth */}
+            <div className="absolute top-0 right-0 -mr-20 -mt-20 w-80 h-80 bg-primary/20 rounded-full blur-[80px] animate-pulse-glow" />
+            <div className="absolute bottom-0 left-0 -ml-20 -mb-20 w-96 h-96 bg-accent/20 rounded-full blur-[80px] animate-pulse-glow" style={{ animationDelay: '1s' }} />
+            
+            <div className="relative z-10 grid md:grid-cols-12 gap-8 items-center">
+              <div className="md:col-span-7">
+                <motion.div 
+                  className="inline-flex items-center gap-2 text-primary mb-6 bg-primary/10 px-4 py-2 rounded-full border border-primary/20 backdrop-blur-md shadow-inner"
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.3 }}
+                >
+                  <Sparkles className="h-4 w-4" />
+                  <span className="text-sm font-semibold tracking-wide uppercase">Your Wellness Companion</span>
+                </motion.div>
+                <motion.h1 
+                  className="text-4xl md:text-5xl lg:text-7xl font-extrabold tracking-tight text-foreground mb-6 text-balance leading-tight drop-shadow-sm"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.4 }}
+                >
+                  {greeting}, <br/><span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-primary to-accent filter drop-shadow hover:brightness-110 transition-all">{firstName}!</span>
+                </motion.h1>
+                <motion.p 
+                  className="text-lg md:text-xl text-muted-foreground max-w-xl text-pretty mb-8 leading-relaxed font-medium"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.5 }}
+                >
+                  Health Pilot helps you maintain healthy habits throughout your workday. Let's make today productive and balanced.
+                </motion.p>
               </div>
-              <span className="text-sm font-medium">Your Wellness Companion</span>
-            </motion.div>
-            <motion.h1 
-              className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-foreground mb-4 text-balance"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.3 }}
-            >
-              {greeting}, {firstName}!{" "}
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-accent">
-                Ready for a Healthy Day?
-              </span>
-            </motion.h1>
-            <motion.p 
-              className="text-lg text-muted-foreground max-w-2xl text-pretty"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.4 }}
-            >
-              Health Pilot helps you maintain healthy habits throughout your workday with gamified reminders for stretching, hydration, and breathing exercises.
-            </motion.p>
+
+              {/* Quick Summary Cards right in the hero area */}
+              <div className="md:col-span-5 grid grid-cols-2 gap-4">
+                 <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6 }} className="h-full">
+                   <Card className="glass-card bg-background/40 backdrop-blur-md border border-white/10 hover:bg-background/60 transition-colors h-full">
+                     <CardContent className="p-5 flex flex-col justify-center h-full gap-3">
+                       <div className="h-10 w-10 rounded-full bg-primary/20 flex items-center justify-center">
+                         <Timer className="h-5 w-5 text-primary" />
+                       </div>
+                       <div>
+                         <p className="text-xs text-muted-foreground font-semibold uppercase tracking-wider">Focus Flow</p>
+                         <p className="font-bold text-lg">Ready</p>
+                       </div>
+                     </CardContent>
+                   </Card>
+                 </motion.div>
+                 <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.7 }} className="h-full">
+                   <Card className="glass-card bg-background/40 backdrop-blur-md border border-white/10 hover:bg-background/60 transition-colors h-full">
+                     <CardContent className="p-5 flex flex-col justify-center h-full gap-3">
+                       <div className="h-10 w-10 rounded-full bg-accent/20 flex items-center justify-center">
+                         <Leaf className="h-5 w-5 text-accent-foreground" />
+                       </div>
+                       <div>
+                         <p className="text-xs text-muted-foreground font-semibold uppercase tracking-wider">Plant Status</p>
+                         <p className="font-bold text-lg">{points > 50 ? "Thriving" : "Growing"}</p>
+                       </div>
+                     </CardContent>
+                   </Card>
+                 </motion.div>
+                 <motion.div className="col-span-2" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.8 }}>
+                   <Card className="glass-card bg-background/40 backdrop-blur-md border border-white/10 hover:bg-background/60 transition-colors relative overflow-hidden group">
+                     {/* animated sheen */}
+                     <div className="absolute inset-0 translate-x-[-100%] bg-gradient-to-r from-transparent via-white/5 to-transparent group-hover:animate-[shimmer_1.5s_infinite]" />
+                     <CardContent className="p-5 flex items-center gap-4 relative z-10">
+                       <div className="h-12 w-12 rounded-full bg-green-500/20 flex items-center justify-center shrink-0">
+                         <Activity className="h-6 w-6 text-green-500" />
+                       </div>
+                       <div className="flex-1">
+                         <p className="text-xs text-muted-foreground font-semibold uppercase tracking-wider mb-1">Daily Wellness Progress</p>
+                         <div className="flex items-center gap-3">
+                           <div className="h-2 w-full bg-muted/50 rounded-full overflow-hidden shadow-inner">
+                             <motion.div 
+                               className="h-full bg-gradient-to-r from-green-500 to-emerald-400 rounded-full" 
+                               initial={{ width: 0 }}
+                               animate={{ width: `${Math.min(100, (breaksCompleted / 5) * 100)}%` }}
+                               transition={{ duration: 1, delay: 1 }}
+                             />
+                           </div>
+                           <span className="font-bold text-sm text-foreground">{Math.min(100, Math.round((breaksCompleted / 5) * 100))}%</span>
+                         </div>
+                       </div>
+                     </CardContent>
+                   </Card>
+                 </motion.div>
+              </div>
+            </div>
           </div>
         </motion.section>
 
-        {/* Main Content Grid */}
-        <div className="grid lg:grid-cols-3 gap-8">
-          {/* Left Column - Timer */}
+        {/* Main Dashboard Layout */}
+        <div className="grid lg:grid-cols-12 gap-6 lg:gap-8">
+          
+          {/* Left Column (Timer & Quick Actions) - 7 cols */}
           <motion.div 
-            className="lg:col-span-2 space-y-8"
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.5 }}
+            className="lg:col-span-7 flex flex-col gap-6 lg:gap-8"
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.5, ease: "easeOut" }}
           >
-            <WorkTimer 
-              onPointsEarned={handlePointsEarned}
-              onBreakCompleted={handleBreakCompleted}
-            />
+            {/* Elegant Focus Timer Wrapper */}
+            <div className="glass-card rounded-2xl border border-white/10 overflow-hidden shadow-xl bg-background/60 backdrop-blur-xl hover:shadow-2xl hover:border-white/20 transition-all duration-300">
+              <div className="p-1 border-b border-white/5 bg-muted/20 backdrop-blur-md">
+                <div className="flex items-center justify-between px-4 py-2">
+                  <div className="flex items-center gap-2">
+                    <div className="w-3 h-3 rounded-full bg-red-400/80 shadow-sm" />
+                    <div className="w-3 h-3 rounded-full bg-yellow-400/80 shadow-sm" />
+                    <div className="w-3 h-3 rounded-full bg-green-400/80 shadow-sm" />
+                  </div>
+                  <span className="text-xs font-semibold uppercase tracking-widest text-muted-foreground/70">Focus Terminal</span>
+                </div>
+              </div>
+              <div className="p-6 md:p-8">
+                <WorkTimer 
+                  onPointsEarned={handlePointsEarned}
+                  onBreakCompleted={handleBreakCompleted}
+                />
+              </div>
+            </div>
 
-            {/* Quick Actions */}
-            <div className="grid sm:grid-cols-2 gap-4">
-              <Link href="/symptoms" className="block">
-                <motion.div
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                >
-                  <Card className="h-full glass-card hover:shadow-lg transition-all cursor-pointer group border-primary/10">
-                    <CardContent className="pt-6">
-                      <div className="flex items-start gap-4">
-                        <motion.div 
-                          className="h-14 w-14 rounded-2xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center shrink-0"
-                          whileHover={{ rotate: [0, -10, 10, 0] }}
-                          transition={{ duration: 0.5 }}
-                        >
-                          <Stethoscope className="h-7 w-7 text-primary" />
-                        </motion.div>
+            {/* Quick Actions Matrix */}
+            <div className="grid sm:grid-cols-2 gap-6">
+              <Link href="/symptoms" className="block focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 rounded-2xl">
+                <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.98 }} className="h-full">
+                  <Card className="h-full glass-card hover:shadow-xl hover:border-primary/30 transition-all cursor-pointer group border border-primary/10 bg-gradient-to-br from-background/50 to-primary/5">
+                    <CardContent className="p-6">
+                      <div className="flex flex-col gap-4">
+                        <div className="flex items-center justify-between">
+                          <motion.div 
+                            className="h-16 w-16 rounded-2xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center shrink-0 border border-primary/20 shadow-inner"
+                            whileHover={{ rotate: [0, -10, 10, 0] }}
+                            transition={{ duration: 0.5 }}
+                          >
+                            <Stethoscope className="h-8 w-8 text-primary drop-shadow-md" />
+                          </motion.div>
+                          <div className="h-8 w-8 rounded-full bg-muted/50 flex items-center justify-center group-hover:bg-primary group-hover:text-primary-foreground transition-colors shadow-sm">
+                            <ArrowRight className="h-4 w-4" />
+                          </div>
+                        </div>
                         <div>
-                          <h3 className="font-semibold text-lg flex items-center gap-2">
-                            Symptom Checker
-                            <ArrowRight className="h-4 w-4 opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all" />
-                          </h3>
-                          <p className="text-sm text-muted-foreground mt-1">
-                            Find the right specialist for your symptoms
+                          <h3 className="font-bold text-xl mb-1 text-foreground">Symptom Checker</h3>
+                          <p className="text-sm text-muted-foreground font-medium leading-relaxed">
+                            AI-powered analysis to find the right specialist.
                           </p>
                         </div>
                       </div>
@@ -156,28 +230,27 @@ export default function HomePage() {
                 </motion.div>
               </Link>
 
-              <Link href="/clinics" className="block">
-                <motion.div
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                >
-                  <Card className="h-full glass-card hover:shadow-lg transition-all cursor-pointer group border-accent/10">
-                    <CardContent className="pt-6">
-                      <div className="flex items-start gap-4">
-                        <motion.div 
-                          className="h-14 w-14 rounded-2xl bg-gradient-to-br from-accent/30 to-accent/10 flex items-center justify-center shrink-0"
-                          whileHover={{ rotate: [0, -10, 10, 0] }}
-                          transition={{ duration: 0.5 }}
-                        >
-                          <MapPin className="h-7 w-7 text-accent-foreground" />
-                        </motion.div>
+              <Link href="/clinics" className="block focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2 rounded-2xl">
+                <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.98 }} className="h-full">
+                  <Card className="h-full glass-card hover:shadow-xl hover:border-accent/30 transition-all cursor-pointer group border border-accent/10 bg-gradient-to-br from-background/50 to-accent/5">
+                    <CardContent className="p-6">
+                      <div className="flex flex-col gap-4">
+                        <div className="flex items-center justify-between">
+                          <motion.div 
+                            className="h-16 w-16 rounded-2xl bg-gradient-to-br from-accent/30 to-accent/10 flex items-center justify-center shrink-0 border border-accent/20 shadow-inner"
+                            whileHover={{ rotate: [0, -10, 10, 0] }}
+                            transition={{ duration: 0.5 }}
+                          >
+                            <MapPin className="h-8 w-8 text-accent-foreground drop-shadow-md" />
+                          </motion.div>
+                          <div className="h-8 w-8 rounded-full bg-muted/50 flex items-center justify-center group-hover:bg-accent group-hover:text-accent-foreground transition-colors shadow-sm">
+                            <ArrowRight className="h-4 w-4" />
+                          </div>
+                        </div>
                         <div>
-                          <h3 className="font-semibold text-lg flex items-center gap-2">
-                            Find Clinics
-                            <ArrowRight className="h-4 w-4 opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all" />
-                          </h3>
-                          <p className="text-sm text-muted-foreground mt-1">
-                            Locate affordable healthcare near you
+                          <h3 className="font-bold text-xl mb-1 text-foreground">Find Clinics</h3>
+                          <p className="text-sm text-muted-foreground font-medium leading-relaxed">
+                            Locate top-rated healthcare nearby effortlessly.
                           </p>
                         </div>
                       </div>
@@ -186,105 +259,157 @@ export default function HomePage() {
                 </motion.div>
               </Link>
             </div>
+
+            {/* Empty Space Filler - Daily Activity / Tips */}
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.7 }}>
+               <Card className="glass-card border border-white/10 bg-background/40 backdrop-blur-md shadow-xl overflow-hidden mt-6 lg:mt-8">
+                 <div className="p-1 border-b border-white/5 bg-accent/10 backdrop-blur-md">
+                   <div className="flex items-center gap-2 px-4 py-2">
+                     <CalendarCheck className="w-4 h-4 text-accent" />
+                     <span className="text-xs font-semibold uppercase tracking-widest text-muted-foreground/70">Activity Log</span>
+                   </div>
+                 </div>
+                 <CardContent className="p-6">
+                   <div className="space-y-4">
+                     {[
+                       { time: "09:00 AM", title: "Started Focus Session", type: "focus" },
+                       { time: "10:30 AM", title: "Completed Hydration Break", type: "break" },
+                       { time: "11:45 AM", title: "Earned Early Bird Badge", type: "achievement" },
+                     ].map((item, i) => (
+                       <div key={i} className="flex items-start gap-4">
+                         <div className="mt-1">
+                           <div className={`w-2 h-2 rounded-full ${
+                             item.type === 'focus' ? 'bg-primary' : 
+                             item.type === 'break' ? 'bg-accent' : 'bg-yellow-400'
+                           } shadow-sm`} />
+                         </div>
+                         <div>
+                           <p className="text-sm font-medium">{item.title}</p>
+                           <p className="text-xs text-muted-foreground">{item.time}</p>
+                         </div>
+                       </div>
+                     ))}
+                   </div>
+                 </CardContent>
+               </Card>
+            </motion.div>
           </motion.div>
 
-          {/* Right Column - Stats & Plant */}
+          {/* Right Column (Plant & Stats) - 5 cols */}
           <motion.div 
-            className="space-y-6"
+            className="lg:col-span-5 flex flex-col gap-6 lg:gap-8"
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.6 }}
+            transition={{ delay: 0.6, ease: "easeOut" }}
           >
-            {/* Virtual Plant */}
-            <VirtualPlant 
-              points={points}
-              todayBreaks={todayBreaks}
-            />
-            
-            {/* Compact Stats */}
-            <GamificationStats
-              points={points}
-              streak={streak}
-              breaksCompleted={breaksCompleted}
-              todayBreaks={todayBreaks}
-            />
+            {/* The Plant Container */}
+            <div className="glass-card rounded-2xl border border-white/10 p-1 shadow-xl relative overflow-hidden bg-gradient-to-b from-green-500/10 to-background/50 backdrop-blur-xl">
+               <VirtualPlant 
+                 points={points}
+                 todayBreaks={todayBreaks}
+               />
+            </div>
+
+            {/* Gamification Stats */}
+            <div className="glass-card rounded-2xl border border-white/10 p-1 shadow-xl bg-background/50 backdrop-blur-md">
+              <div className="p-4 md:p-6 pb-2">
+                <GamificationStats
+                  points={points}
+                  streak={streak}
+                  breaksCompleted={breaksCompleted}
+                  todayBreaks={todayBreaks}
+                />
+              </div>
+            </div>
 
             {/* Achievements */}
-            <Achievements
-              points={points}
-              streak={streak}
-              breaksCompleted={breaksCompleted}
-              todayBreaks={todayBreaks}
-            />
+            <div className="glass-card rounded-2xl border border-white/10 p-1 shadow-xl bg-background/50 backdrop-blur-md">
+              <div className="p-4 md:p-6 pb-2">
+                <Achievements
+                  points={points}
+                  streak={streak}
+                  breaksCompleted={breaksCompleted}
+                  todayBreaks={todayBreaks}
+                />
+              </div>
+            </div>
           </motion.div>
         </div>
 
         {/* Features Section */}
         <motion.section 
-          className="mt-20 pt-16 border-t"
+          className="mt-24 pt-20 border-t border-border/50 relative"
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
+          viewport={{ once: true, margin: "-100px" }}
         >
-          <div className="text-center mb-12">
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-3/4 h-px bg-gradient-to-r from-transparent via-primary/50 to-transparent" />
+          
+          <div className="text-center mb-16">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
+              transition={{ duration: 0.6 }}
             >
-              <h2 className="text-3xl md:text-4xl font-bold mb-4 text-balance">
+              <h2 className="text-3xl md:text-5xl font-extrabold mb-6 text-balance tracking-tight">
                 Everything You Need for{" "}
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-accent">
+                <br className="hidden md:block"/>
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-accent filter drop-shadow hover:brightness-110 transition-all">
                   Workplace Wellness
                 </span>
               </h2>
-              <p className="text-muted-foreground max-w-2xl mx-auto">
-                Our platform combines productivity tools with health features to help you stay balanced throughout your day.
+              <p className="text-lg text-muted-foreground font-medium max-w-2xl mx-auto leading-relaxed">
+                Our platform combines productivity tools with health features to help you stay balanced, focused, and healthy throughout your day.
               </p>
             </motion.div>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-6">
+          <div className="grid md:grid-cols-3 gap-8">
             {[
               {
                 icon: Timer,
                 title: "Smart Work Timer",
-                description: "Focus sessions with automatic break reminders. Customize your work and break durations.",
-                gradient: "from-primary/20 to-primary/5",
+                description: "Focus sessions with automatic break reminders. Customize your work and break durations to fit your rhythm.",
+                gradient: "from-primary/20 via-primary/10 to-transparent",
                 iconColor: "text-primary",
+                borderColor: "group-hover:border-primary/50"
               },
               {
                 icon: Leaf,
                 title: "Virtual Plant Garden",
-                description: "Watch your plant grow as you complete wellness tasks. Nurture your digital companion.",
-                gradient: "from-green-500/20 to-green-500/5",
+                description: "Watch your digital companion grow as you complete wellness tasks. Building healthy habits has never been more fun.",
+                gradient: "from-green-500/20 via-green-500/10 to-transparent",
                 iconColor: "text-green-600 dark:text-green-400",
+                borderColor: "group-hover:border-green-500/50"
               },
               {
                 icon: TrendingUp,
                 title: "Health Insights",
-                description: "Track your wellness habits over time. Find healthcare specialists when you need them.",
-                gradient: "from-accent/30 to-accent/10",
+                description: "Track your wellness habits over time with detailed analytics. Easily find top healthcare specialists when needed.",
+                gradient: "from-accent/30 via-accent/10 to-transparent",
                 iconColor: "text-accent-foreground",
+                borderColor: "group-hover:border-accent/50"
               },
             ].map((feature, idx) => (
               <motion.div
                 key={feature.title}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
+                initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                whileInView={{ opacity: 1, scale: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ delay: idx * 0.1 }}
+                transition={{ delay: idx * 0.15, duration: 0.5 }}
+                className="h-full"
               >
-                <Card className="glass-card h-full hover:shadow-lg transition-shadow">
-                  <CardHeader>
+                <Card className={`glass-card h-full transition-all duration-300 group border border-white/5 hover:-translate-y-2 hover:shadow-2xl ${feature.borderColor}`}>
+                  <CardHeader className="p-8">
                     <motion.div 
-                      className={`h-14 w-14 rounded-2xl bg-gradient-to-br ${feature.gradient} flex items-center justify-center mb-4`}
+                      className={`h-16 w-16 rounded-2xl bg-gradient-to-br ${feature.gradient} flex items-center justify-center mb-6 shadow-inner border border-white/5`}
                       whileHover={{ scale: 1.1, rotate: 5 }}
                     >
-                      <feature.icon className={`h-7 w-7 ${feature.iconColor}`} />
+                      <feature.icon className={`h-8 w-8 ${feature.iconColor} drop-shadow-md`} />
                     </motion.div>
-                    <CardTitle>{feature.title}</CardTitle>
-                    <CardDescription>
+                    <CardTitle className="text-2xl font-bold mb-3">{feature.title}</CardTitle>
+                    <CardDescription className="text-base text-muted-foreground/90 font-medium leading-relaxed">
                       {feature.description}
                     </CardDescription>
                   </CardHeader>
@@ -296,38 +421,37 @@ export default function HomePage() {
       </main>
 
       {/* Footer */}
-      <footer className="border-t mt-20 bg-background/50 backdrop-blur-sm">
-        <div className="container px-4 py-10">
+      <footer className="border-t border-border/50 mt-24 bg-background/80 backdrop-blur-xl relative z-10">
+        <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-primary/20 to-transparent" />
+        <div className="container px-4 py-12 mx-auto max-w-7xl">
           <div className="grid md:grid-cols-3 gap-8 items-center">
             <motion.div 
               className="flex items-center gap-3"
               whileHover={{ scale: 1.02 }}
             >
-              <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-primary to-accent flex items-center justify-center">
-                <Heart className="h-5 w-5 text-primary-foreground" />
+              <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-primary to-accent flex items-center justify-center shadow-lg border border-white/10">
+                <Heart className="h-6 w-6 text-primary-foreground drop-shadow" />
               </div>
               <div>
-                <span className="font-bold text-lg block">Health Pilot</span>
-                <span className="text-xs text-muted-foreground">Your Health Companion</span>
+                <span className="font-bold text-xl block tracking-tight">Health Pilot</span>
+                <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Your Health Companion</span>
               </div>
             </motion.div>
-            <p className="text-sm text-muted-foreground text-center">
-              Take care of your health. One micro-break at a time. 🌿
+            <p className="text-sm text-center font-medium bg-clip-text text-transparent bg-gradient-to-r from-muted-foreground to-muted-foreground/70">
+              Take care of your health.<br/>One micro-break at a time. 🌿
             </p>
-            <div className="flex items-center justify-end gap-4">
-              <div className="flex gap-1">
-                <Button variant="ghost" size="sm">About</Button>
-                <Button variant="ghost" size="sm">Privacy</Button>
-                <Button variant="ghost" size="sm">Help</Button>
-              </div>
+            <div className="flex items-center md:justify-end gap-2">
+              <Button variant="ghost" size="sm" className="rounded-full hover:bg-primary/10 hover:text-primary transition-colors">About</Button>
+              <Button variant="ghost" size="sm" className="rounded-full hover:bg-primary/10 hover:text-primary transition-colors">Privacy</Button>
+              <Button variant="ghost" size="sm" className="rounded-full hover:bg-primary/10 hover:text-primary transition-colors">Help</Button>
             </div>
           </div>
-          <div className="mt-8 pt-6 border-t border-border/50 flex flex-col sm:flex-row items-center justify-between gap-2">
-            <p className="text-xs text-muted-foreground">
-              © {new Date().getFullYear()} Health Pilot. Built with ❤️ for Hackathon 2k26.
+          <div className="mt-10 pt-8 border-t border-border/40 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <p className="text-sm text-muted-foreground font-medium">
+              © {new Date().getFullYear()} Health Pilot. Built with <span className="text-red-500 animate-pulse inline-block">❤️</span> for Hackathon 2k26.
             </p>
             <div className="flex items-center gap-2">
-              <span className="text-xs px-2.5 py-1 rounded-full bg-primary/10 text-primary font-medium">
+              <span className="text-xs px-3 py-1.5 rounded-full bg-primary/10 text-primary font-bold shadow-sm border border-primary/20">
                 v1.0.0
               </span>
             </div>

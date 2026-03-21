@@ -22,6 +22,7 @@ import {
   Map
 } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { getNearbyGovHospitals } from "@/backend/hospital.actions"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -265,52 +266,13 @@ export function ClinicFinder({ initialSpecialist }: ClinicFinderProps) {
     async function fetchNearbyHospitals(lat: number, lng: number) {
       setIsLoadingList(true)
       try {
-        const query = `
-          [out:json];
-          (
-            node["amenity"="hospital"](around:5000,${lat},${lng});
-            node["amenity"="clinic"](around:5000,${lat},${lng});
-            way["amenity"="hospital"](around:5000,${lat},${lng});
-            way["amenity"="clinic"](around:5000,${lat},${lng});
-          );
-          out center;
-        `;
+        // Use the server action to get government hospitals from the dataset
+        const govClinics = await getNearbyGovHospitals(lat, lng, 50)
         
-        const res = await fetch(`https://overpass-api.de/api/interpreter?data=${encodeURIComponent(query)}`)
-        const data = await res.json()
-        
-        if (data.elements && data.elements.length > 0) {
-          const realClinics: Clinic[] = data.elements.map((el: any, index: number) => {
-            const isWay = el.type === 'way'
-            const elLat = isWay ? el.center.lat : el.lat
-            const elLng = isWay ? el.center.lon : el.lon
-            const distance = calculateDistance(lat, lng, elLat, elLng)
-            
-            // Generate some plausible mock details for missing OSM data to keep the UI rich
-            const hash = Math.abs(el.id % 3)
-            const priceRanges: ("low" | "medium" | "high")[] = ["low", "medium", "high"]
-            const fees = [500, 1000, 1500]
-            
-            return {
-              id: el.id.toString(),
-              name: el.tags?.name || (el.tags?.amenity === 'clinic' ? 'Local Clinic' : 'General Hospital'),
-              specialty: el.tags?.healthcare_speciality ? el.tags.healthcare_speciality.split(';') : ['General Physician', 'Emergency'],
-              address: el.tags?.['addr:full'] || el.tags?.['addr:street'] || 'Address unavailable',
-              distance: distance,
-              rating: Number((4 + Math.random()).toFixed(1)),
-              reviewCount: Math.floor(Math.random() * 500) + 50,
-              priceRange: priceRanges[hash],
-              acceptsWalkIn: Math.random() > 0.3,
-              hours: el.tags?.opening_hours || "24/7",
-              phone: el.tags?.phone || "+91 Contact Unavailable",
-              waitTime: `${15 + Math.floor(Math.random() * 45)} min`,
-              lat: elLat,
-              lng: elLng,
-              consultationFee: fees[hash],
-            }
-          })
-          
-          setClinics(realClinics)
+        if (govClinics && govClinics.length > 0) {
+          setClinics(govClinics)
+        } else {
+          console.warn("No nearby hospitals found in data. Keeping mock data.")
         }
       } catch (err) {
         console.error("Failed to fetch clinics", err)

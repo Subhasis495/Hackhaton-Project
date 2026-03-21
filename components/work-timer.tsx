@@ -11,11 +11,15 @@ import {
   Settings,
   Droplets,
   Wind,
-  PersonStanding
+  PersonStanding,
+  Check
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { BreathingExercise } from "./breathing-exercise"
 import { StretchingExercise } from "./stretching-exercise"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+import { Label } from "@/components/ui/label"
+import { Input } from "@/components/ui/input"
 import { logBreak } from "@/backend/wellness.actions"
 import { useAuth } from "@/components/auth-provider"
 
@@ -64,7 +68,7 @@ interface WorkTimerProps {
 
 export function WorkTimer({ onPointsEarned, onBreakCompleted }: WorkTimerProps) {
   const { user } = useAuth()
-  const [workDuration] = useState(25 * 60) // 25 minutes
+  const [workDuration, setWorkDuration] = useState(25 * 60) // default 25 minutes
   const [timeRemaining, setTimeRemaining] = useState(workDuration)
   const [isRunning, setIsRunning] = useState(false)
   const [showBreak, setShowBreak] = useState(false)
@@ -150,6 +154,13 @@ export function WorkTimer({ onPointsEarned, onBreakCompleted }: WorkTimerProps) 
     if (currentBreak) {
       setActiveExercise(currentBreak.type)
     }
+  }
+
+  const handleUpdateDuration = (mins: number) => {
+    const newDuration = mins * 60
+    setWorkDuration(newDuration)
+    setTimeRemaining(newDuration)
+    setIsRunning(false)
   }
 
   if (activeExercise === "breathing") {
@@ -305,14 +316,39 @@ export function WorkTimer({ onPointsEarned, onBreakCompleted }: WorkTimerProps) 
             <span className="sr-only">{isRunning ? "Pause" : "Start"}</span>
           </Button>
 
-          <Button
-            variant="outline"
-            size="icon"
-            className="h-12 w-12"
-          >
-            <Settings className="h-5 w-5" />
-            <span className="sr-only">Settings</span>
-          </Button>
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button
+                variant="outline"
+                size="icon"
+                className="h-12 w-12"
+              >
+                <Settings className="h-5 w-5" />
+                <span className="sr-only">Settings</span>
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-64 glass-card border-white/10 p-4">
+              <div className="space-y-4">
+                <h4 className="font-semibold leading-none text-foreground">Timer Settings</h4>
+                <p className="text-sm text-muted-foreground">Set your focus duration.</p>
+                <div className="grid gap-2">
+                  <div className="grid grid-cols-3 gap-2">
+                    {[15, 25, 45].map((mins) => (
+                      <Button
+                        key={mins}
+                        variant={workDuration === mins * 60 ? "default" : "outline"}
+                        size="sm"
+                        onClick={() => handleUpdateDuration(mins)}
+                        className="text-xs"
+                      >
+                        {mins} min
+                      </Button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </PopoverContent>
+          </Popover>
         </div>
 
         <div className="grid grid-cols-3 gap-3">
